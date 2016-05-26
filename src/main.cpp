@@ -1,6 +1,7 @@
 #include <iostream>
 #include "campo.h"
 #include "drone.h"
+#include "util.h"
 
 using namespace std;
 
@@ -33,6 +34,7 @@ void crearCampo(){
     // Creo campo sin granero y Casa
     Campo campo2;
     campo2.mostrar(std::cout);
+
 }
 
 void crearDrone(){
@@ -53,4 +55,7 @@ void compararDrones(){
     std::cout << "Drone1 == Drone1: " << (drone1 == drone1) << std::endl;
     std::cout << "Drone1 == Drone2: " << (drone1 == drone2) << std::endl;
     std::cout << "Drone1 == Drone3: " << (drone1 == drone3) << std::endl;
+    // std::cout << "mismosProductos(Drone1, Drone2)" << (Util::mismos(productos1, productos2)) << std::endl;
+    std::cout << "mismosProductos(Drone1, Drone2)" << (Util::mismos(productos1, productos2)) << std::endl;
+    std::cout << "mismosProductos(Drone1, Drone3)" << (Util::mismos(productos1, productos3)) << std::endl;
 }
