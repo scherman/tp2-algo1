@@ -2,6 +2,9 @@
 #include <algorithm>
 
 bool vecinoConPlaga(Sistema s, Posicion p);
+Secuencia<Posicion> posiblePosicionLibre(Sistema s);
+bool estaLibre(Sistema s, Posicion p);
+Posicion posDelGranero(Campo c);
 
 Sistema::Sistema()
 {
@@ -94,11 +97,63 @@ bool vecinoConPlaga(Sistema s, Posicion p) //le pongo const a los parametros o n
 	return tieneUnVecinoConPlaga;
 }
 
-void Sistema::despegar(const Drone & d)
+void Sistema::despegar(const Drone & d) //hay un requiere que dice que d debe pertenecer a Enjambre y que existe al menos una parcela libre.
 {
+	Posicion p = posiblePosicionLibre(*this)[0];//estaria bueno que elija una posicion aleatoriamente...
+	for (int i = 0; i < enjambreDrones().size(); ++i){
+		if(enjambreDrones()[i] == d){
+			_enjambre[i].vueloRealizado()[0] = p;		//me tira un error aca... puede ser _enjambre o enjambreDrones()
+		}
+	}
+}
+//AUXILIARES
+Secuencia<Posicion> posiblePosicionLibre(Sistema s)
+{
+	Secuencia<Posicion> ps;
+	Posicion pos;
+	Posicion p = posDelGranero(s.campo());
+	for (int i = s.campo().dimensiones().largo; i >= 0; --i){
+		for (int j = 0; j < s.campo().dimensiones().ancho; ++j){
+			pos.y = j;
+			pos.x = i;
+			bool esVecino = (((pos.y -1 == p.y)||(pos.y == p.y)||(pos.y+1 == p.y)) &&((pos.x == p.x)||(pos.x+1 == p.x)||(pos.x-1 == p.x)));//se podria mejorar, implementado la funcion distancia!
+			if (esVecino && estaLibre(s, pos)){
+				ps.push_back(pos);
+			}
+		}
+	}	
+}
+//AUXILIARES
+bool estaLibre(Sistema s, Posicion p) //se fija si un posicion 'p' esta libre de drones.
+{
+	bool libre = true;
+	for (int i = 0; i < s.enjambreDrones().size(); ++i){
+		Posicion pos = s.enjambreDrones()[i].posicionActual();
+		if ((pos.x == p.x) && (pos.y == p.y)){
+			libre = false;
+			break;
+		}
+	}	
+}
+//AUXILIARES
+Posicion posDelGranero(Campo c)
+{
+	Posicion p;
+	for (int i = c.dimensiones().largo; i >= 0; --i){
+		for (int j = 0; j < c.dimensiones().ancho; ++j){
+			Posicion pos;
+			pos.y = j;
+			pos.x = i;
+			if (c.contenido(pos) == Granero){
+				p = pos;
+				break;
+			}
+		}
+	}
+	return p;
 }
 
-bool Sistema::listoParaCosechar() const
+bool Sistema::listoParaCosechar() const //de este ejercicio me encargo yo asi hago el teorema del INVARIANTE y todo eso.
 {
 	return false;
 }

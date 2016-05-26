@@ -144,11 +144,11 @@ bool Drone::operator==(const Drone & otroDrone) const
 {
 	bool mismosProductos = false;
 	bool igualRecorrido = false;
-	if((id() == otroDrone.id()) && (bateria() == otroDrone.bateria()) && (enVuelo() == otroDrone.enVuelo())){
+	if((id() == otroDrone.id()) && (bateria() == otroDrone.bateria()) && (enVuelo() == otroDrone.enVuelo()) && (productosDisponibles().size() == otroDrone.productosDisponibles().size())){
 		//miro que tenga los MISMOS productos.
 		for (int j = 0; j < productosDisponibles().size(); ++j){
 			if ((j > 0) && (mismosProductos == false)) break;
-			for (int i = 0; j < otroDrone.productosDisponibles().size(); ++i){
+			for (int i = 0; i < otroDrone.productosDisponibles().size(); ++i){
 				if (productosDisponibles()[j] == otroDrone.productosDisponibles()[i]){
 					mismosProductos = true;
 					break;
@@ -161,7 +161,7 @@ bool Drone::operator==(const Drone & otroDrone) const
 		//miro que tenga exactamente el mismo recorrido
 		for (int j = 0; j < vueloRealizado().size(); ++j){
 			if ((j > 0) && (igualRecorrido == false)) break;
-			for (int i = 0; j < otroDrone.vueloRealizado().size(); ++i){
+			for (int i = 0; i < otroDrone.vueloRealizado().size(); ++i){
 				if ((vueloRealizado()[j].x == otroDrone.vueloRealizado()[i].x) && (vueloRealizado()[j].y == otroDrone.vueloRealizado()[i].y)){
 					igualRecorrido = true;
 					break;
