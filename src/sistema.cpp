@@ -1,10 +1,13 @@
 #include "sistema.h"
 #include <algorithm>
 
+//estos ahi que agregarlos en la parte privada despues! Y pasar las funciones a un aux.cpp?
 bool vecinoConPlaga(Sistema s, Posicion p);
 Secuencia<Posicion> posiblePosicionLibre(Sistema s);
-bool estaLibre(Sistema s, Posicion p);
 Posicion posDelGranero(Campo c);
+bool estaLibre(Sistema s, Posicion p);
+Secuencia<Posicion> parcelasCultivo(Campo c);
+int cantCultivosCosechables(Sistema s);
 
 Sistema::Sistema()
 {
@@ -21,7 +24,7 @@ const Campo & Sistema::campo() const
 
 EstadoCultivo Sistema::estadoDelCultivo(const Posicion & p) const
 {
-	return this->_estado.parcelas[p.x][p.y];
+		return this->_estado.parcelas[p.x][p.y];
 }
 
 const Secuencia<Drone>& Sistema::enjambreDrones() const
@@ -50,7 +53,7 @@ void Sistema::crecer()
 				}
 			}
 		}
-	}
+	}					
 }
 
 void Sistema::seVinoLaMaleza(const Secuencia<Posicion>& ps)
@@ -77,17 +80,17 @@ void Sistema::seExpandePlaga()
 		}
 	}
 }
-
+//AUXILIARES
 bool vecinoConPlaga(Sistema s, Posicion p) //le pongo const a los parametros o no??
 {
 	bool tieneUnVecinoConPlaga = false;
-	EstadoCultivo a = ConPlaga;
+	EstadoCultivo a = ConPlaga; 
 	Posicion pos;
 	for (int i = s.campo().dimensiones().largo; i >= 0; --i){
 		for (int j = 0; j < s.campo().dimensiones().ancho; ++j){
 			pos.y = j;
 			pos.x = i;
-			bool esVecino = (((pos.y -1 == p.y)||(pos.y == p.y)||(pos.y+1 == p.y)) &&((pos.x == p.x)||(pos.x+1 == p.x)||(pos.x-1 == p.x)));
+			bool esVecino = (((pos.y -1 == p.y)||(pos.y == p.y)||(pos.y+1 == p.y)) &&((pos.x == p.x)||(pos.x+1 == p.x)||(pos.x-1 == p.x)));//se podria mejorar, implementado la funcion distancia!
 			if (esVecino && s.estadoDelCultivo(pos) == a){
 				tieneUnVecinoConPlaga = true;
 				break;
@@ -96,6 +99,8 @@ bool vecinoConPlaga(Sistema s, Posicion p) //le pongo const a los parametros o n
 	}
 	return tieneUnVecinoConPlaga;
 }
+
+
 
 void Sistema::despegar(const Drone & d) //hay un requiere que dice que d debe pertenecer a Enjambre y que existe al menos una parcela libre.
 {
@@ -121,10 +126,11 @@ Secuencia<Posicion> posiblePosicionLibre(Sistema s)
 				ps.push_back(pos);
 			}
 		}
-	}	
+	}
+	return ps;	
 }
 //AUXILIARES
-bool estaLibre(Sistema s, Posicion p) //se fija si un posicion 'p' esta libre de drones.
+bool estaLibre(Sistema s, Posicion p) //se fija si una posicion 'p' esta libre de drones.
 {
 	bool libre = true;
 	for (int i = 0; i < s.enjambreDrones().size(); ++i){
@@ -133,7 +139,8 @@ bool estaLibre(Sistema s, Posicion p) //se fija si un posicion 'p' esta libre de
 			libre = false;
 			break;
 		}
-	}	
+	}
+	return libre;	
 }
 //AUXILIARES
 Posicion posDelGranero(Campo c)
@@ -155,7 +162,46 @@ Posicion posDelGranero(Campo c)
 
 bool Sistema::listoParaCosechar() const //de este ejercicio me encargo yo asi hago el teorema del INVARIANTE y todo eso.
 {
-	return false;
+	bool res = ((cantCultivosCosechables(*this))/(parcelasCultivo(campo()).size())) >= 0.9;
+	return res;
+}
+//AUXILIAR
+Secuencia<Posicion> parcelasCultivo(Campo c)
+{
+	Secuencia<Posicion> todosLosCultivos;
+	Posicion p;
+	int i = 0;
+	int j = c.dimensiones().largo -1;
+	while (j >= 0 && i < c.dimensiones().ancho){
+		p.y = j;
+		p.x = i;
+		if (c.contenido(p) == Cultivo){
+			todosLosCultivos.push_back(p);
+		}
+		if (j == 0){
+			j = c.dimensiones().largo -1;
+			i++;
+		}
+		else {
+			j--;
+		}
+	}
+	return todosLosCultivos;
+}
+
+//AUXILIAR
+int cantCultivosCosechables(Sistema s)
+{
+	int res = 0;
+	int i = 0;
+	while (i < parcelasCultivo(s.campo()).size()){
+		Posicion p = parcelasCultivo(s.campo())[i];
+		if (s.estadoDelCultivo(p) == ListoParaCosechar){ //error expected primary-expression before "=="...
+			res++;
+			}
+		i++;
+	}
+	return res;
 }
 
 void Sistema::aterrizarYCargarBaterias(Carga b)
@@ -189,5 +235,6 @@ bool Sistema::operator==(const Sistema & otroSistema) const
 
 std::ostream & operator<<(std::ostream & os, const Sistema & s)
 {
+	// TODO: insert return statement here
 	return os;
 }
