@@ -6,9 +6,8 @@
 
 class Util {
 public:
+  // La idea es poner todos los mismos aca para que sea generico en un futuro y no haya que cambiarlo en todos lados
   static bool mismos(const std::vector<Producto> & t1,const std::vector<Producto> & t2);
-  // template<typename T, typename A>
-  // static bool mismos(const std::vector<T,A> & t1,const std::vector<T,A> & t2);
 private:
 };
 

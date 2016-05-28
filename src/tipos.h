@@ -18,6 +18,7 @@ enum EstadoCultivo {RecienSembrado, EnCrecimiento, ListoParaCosechar, ConMaleza,
 struct Posicion {
     int x;
     int y;
+	bool operator==(const Posicion& pos) const { return (x == pos.x) && (y == pos.y);}  // AGREGADO (PODRIA IR AFUERA DE ESTE ARCHIVO TAMBIEN)
 };
 
 struct Dimension {

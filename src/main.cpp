@@ -58,4 +58,14 @@ void compararDrones(){
     // std::cout << "mismosProductos(Drone1, Drone2)" << (Util::mismos(productos1, productos2)) << std::endl;
     std::cout << "mismosProductos(Drone1, Drone2)" << (Util::mismos(productos1, productos2)) << std::endl;
     std::cout << "mismosProductos(Drone1, Drone3)" << (Util::mismos(productos1, productos3)) << std::endl;
+
+    Posicion pos1;
+    pos1.x = 0;
+    pos1.y = 1;
+    Posicion pos2;
+    pos2.x = 1;
+    pos2.y = 1;
+    Secuencia<Posicion> secuencia1 = {pos1, pos2};
+    std::cout << "Trayectoria == trayectoria: " << (secuencia1 == secuencia1) <<  std::endl;
+
 }
