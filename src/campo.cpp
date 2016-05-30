@@ -18,7 +18,6 @@ Campo::Campo()
 	} while(posC.x == posG.x && posC.y == posG.y);
 
 	// REFACTORIZAR: Aca se deberia llamar al otro constructor enviando posG y posC pero todavia no se como hacerlo. Todo lo que sigue esta repetido
-	std::cout << "Creando campo con Casa en (" << posC.x << "," << posC.y << ") y Granero en (" << posG.x << "," << posG.y << ")" << std::endl;
 
 	// Dimensiono campo.
 	// * Idea: Si a=ANCHO_MIN, t=TOPE_ANCHO y z=ALCANZABLE_EN
@@ -40,8 +39,6 @@ Campo::Campo()
 
 Campo::Campo(const Posicion &posG, const Posicion &posC)
 {
-	std::cout << "Creando campo con Casa en (" << posC.x << "," << posC.y << ") y Granero en (" << posG.x << "," << posG.y << ")" << std::endl;
-
 	// Dimensiono campo.
 	// * Idea: Si a=ANCHO_MIN, t=TOPE_ANCHO y z=ALCANZABLE_EN
 	// ** Ej1) Si a=z=5: rangoAncho<-[0..5] => dim.ancho = 6

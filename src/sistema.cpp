@@ -22,9 +22,10 @@ Sistema::Sistema()
 		this->_enjambre[i] = drone;
 	}
 
+	// Inicializo estados del cultivo
 	this->_estado = Grilla<EstadoCultivo>(this->_campo.dimensiones());
-	for (int i = 0; i < this->_campo.dimensiones().largo; i++) {
-		for (int j = 0; j < this->_campo.dimensiones().ancho; j++) {
+	for (int i = 0; i < this->_campo.dimensiones().ancho; i++) {
+		for (int j = 0; j < this->_campo.dimensiones().largo; j++) {
 			Posicion posicionActual;
 			posicionActual.x = i;
 			posicionActual.y = j;
@@ -40,8 +41,8 @@ Sistema::Sistema(const Campo & c, const Secuencia<Drone>& ds)
 	this->_campo = c;
 	this->_enjambre = ds;
 	this->_estado = Grilla<EstadoCultivo>(c.dimensiones());
-	for (int i = 0; i < c.dimensiones().largo; i++) {
-		for (int j = 0; j < c.dimensiones().ancho; j++) {
+	for (int i = 0; i < c.dimensiones().ancho; i++) {
+		for (int j = 0; j < c.dimensiones().largo; j++) {
 			Posicion posicionActual;
 			posicionActual.x = i;
 			posicionActual.y = j;
@@ -254,6 +255,20 @@ void Sistema::volarYSensar(const Drone & d)
 
 void Sistema::mostrar(std::ostream & os) const
 {
+	this->_campo.mostrar(os);
+
+	// os << "Representacion estados del cultivo. Notacion: -(No es cultivo), NS(NoSensado)"
+	// for (int i = 0; i < this->_campo.dimensiones().ancho; i++) {
+	// 	for (int j = 0; j < this->_campo.dimensiones().largo; j++) {
+	// 		Posicion posicionActual;
+	// 		posicionActual.x = i;
+	// 		posicionActual.y = j;
+	// 		if (this->_campo.contenido(posicionActual) == Cultivo) {
+	// 			_estado.parcelas[i][j] = NoSensado;
+	// 		}
+	// 	}
+	// }
+
 }
 
 void Sistema::guardar(std::ostream & os) const

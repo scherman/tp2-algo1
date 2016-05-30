@@ -1,6 +1,7 @@
 #include <iostream>
 #include "campo.h"
 #include "drone.h"
+#include "sistema.h"
 #include "util.h"
 
 using namespace std;
@@ -8,14 +9,11 @@ using namespace std;
 void crearCampo();
 void crearDrone();
 void compararDrones();
+void crearSistema();
 
 int main()
 {
-    crearCampo();
-    crearDrone();
-    compararDrones();
-
-
+    crearSistema();
     return 0;
 }
 
@@ -68,4 +66,10 @@ void compararDrones(){
     Secuencia<Posicion> secuencia1 = {pos1, pos2};
     std::cout << "Trayectoria == trayectoria: " << (secuencia1 == secuencia1) <<  std::endl;
 
+}
+
+
+void crearSistema() {
+    Sistema sistema;
+    sistema.mostrar(std::cout);
 }
