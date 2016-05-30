@@ -53,7 +53,7 @@ void Sistema::crecer()
 				}
 			}
 		}
-	}					
+	}
 }
 
 void Sistema::seVinoLaMaleza(const Secuencia<Posicion>& ps)
@@ -84,7 +84,7 @@ void Sistema::seExpandePlaga()
 bool vecinoConPlaga(Sistema s, Posicion p) //le pongo const a los parametros o no??
 {
 	bool tieneUnVecinoConPlaga = false;
-	EstadoCultivo a = ConPlaga; 
+	EstadoCultivo a = ConPlaga;
 	Posicion pos;
 	for (int i = s.campo().dimensiones().largo; i >= 0; --i){
 		for (int j = 0; j < s.campo().dimensiones().ancho; ++j){
@@ -104,12 +104,12 @@ bool vecinoConPlaga(Sistema s, Posicion p) //le pongo const a los parametros o n
 
 void Sistema::despegar(const Drone & d) //hay un requiere que dice que d debe pertenecer a Enjambre y que existe al menos una parcela libre.
 {
-	Posicion p = posiblePosicionLibre(*this)[0];//estaria bueno que elija una posicion aleatoriamente...
-	for (int i = 0; i < enjambreDrones().size(); ++i){
-		if(enjambreDrones()[i] == d){
-			_enjambre[i].vueloRealizado()[0] = p;		//me tira un error aca... puede ser _enjambre o enjambreDrones()
-		}
-	}
+	// Posicion p = posiblePosicionLibre(*this)[0];//estaria bueno que elija una posicion aleatoriamente...
+	// for (int i = 0; i < enjambreDrones().size(); ++i){
+	// 	if(enjambreDrones()[i] == d){
+	// 		_enjambre[i].vueloRealizado()[0] = p;		//me tira un error aca... puede ser _enjambre o enjambreDrones()
+	// 	}
+	// }
 }
 //AUXILIARES
 Secuencia<Posicion> posiblePosicionLibre(Sistema s)
@@ -127,7 +127,7 @@ Secuencia<Posicion> posiblePosicionLibre(Sistema s)
 			}
 		}
 	}
-	return ps;	
+	return ps;
 }
 //AUXILIARES
 bool estaLibre(Sistema s, Posicion p) //se fija si una posicion 'p' esta libre de drones.
@@ -140,7 +140,7 @@ bool estaLibre(Sistema s, Posicion p) //se fija si una posicion 'p' esta libre d
 			break;
 		}
 	}
-	return libre;	
+	return libre;
 }
 //AUXILIARES
 Posicion posDelGranero(Campo c)

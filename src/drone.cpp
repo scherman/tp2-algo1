@@ -69,7 +69,17 @@ const Secuencia<Producto>& Drone::productosDisponibles() const
 
 bool Drone::vueloEscalerado() const
 {
-	return false;
+	bool escalerado = true;
+	if (this->_trayectoria.size() >= 2) {
+		for (int i = 0; i < (this->_trayectoria.size()-2); i++) {
+			int deltaX = this->_trayectoria[i].x - this->_trayectoria [i+2].x;
+			int deltaY = this->_trayectoria[i].y - this->_trayectoria [i+2].y;
+			if ((deltaX != 1) && (deltaX != -1)) escalerado = false;
+			if ((deltaX != 1) && (deltaX != -1)) escalerado = false;
+		}
+	}
+
+	return enVuelo() && escalerado;
 }
 
 Secuencia<InfoVueloCruzado> Drone::vuelosCruzados(const Secuencia<Drone>& ds)
@@ -168,7 +178,7 @@ bool Drone::operator==(const Drone & otroDrone) const
 				}
 			}
 		}
-	return (mismosProductos && igualRecorrido);
+		return (mismosProductos && igualRecorrido);
 	}
 }
 
