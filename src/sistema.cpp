@@ -11,10 +11,46 @@ int cantCultivosCosechables(Sistema s);
 
 Sistema::Sistema()
 {
+	this->_campo = Campo();
+
+	srand(time(NULL));
+	int cantDrones = rand() % this->_campo.dimensiones().largo; // Calculo drones a crear
+	this->_enjambre = Secuencia<Drone> (cantDrones);
+	for (int i = 0; i < cantDrones; i++) { // Creo drone por drone y lo agrego al enjambre
+		Secuencia<Producto> productos = {Fertilizante, Fertilizante, PlaguicidaBajoConsumo, Herbicida, HerbicidaLargoAlcance};
+		Drone drone(i, productos);
+		this->_enjambre[i] = drone;
+	}
+
+	this->_estado = Grilla<EstadoCultivo>(this->_campo.dimensiones());
+	for (int i = 0; i < this->_campo.dimensiones().largo; i++) {
+		for (int j = 0; j < this->_campo.dimensiones().ancho; j++) {
+			Posicion posicionActual;
+			posicionActual.x = i;
+			posicionActual.y = j;
+			if (this->_campo.contenido(posicionActual) == Cultivo) {
+				_estado.parcelas[i][j] = NoSensado;
+			}
+		}
+	}
 }
 
 Sistema::Sistema(const Campo & c, const Secuencia<Drone>& ds)
 {
+	this->_campo = c;
+	this->_enjambre = ds;
+	this->_estado = Grilla<EstadoCultivo>(c.dimensiones());
+	for (int i = 0; i < c.dimensiones().largo; i++) {
+		for (int j = 0; j < c.dimensiones().ancho; j++) {
+			Posicion posicionActual;
+			posicionActual.x = i;
+			posicionActual.y = j;
+			if (c.contenido(posicionActual) == Cultivo) {
+				_estado.parcelas[i][j] = NoSensado;
+			}
+		}
+	}
+
 }
 
 const Campo & Sistema::campo() const
