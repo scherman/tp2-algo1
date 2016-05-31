@@ -2,12 +2,12 @@
 #include <algorithm>
 
 //estos ahi que agregarlos en la parte privada despues! Y pasar las funciones a un aux.cpp?
-bool vecinoConPlaga(Sistema s, Posicion p);
-Secuencia<Posicion> posiblePosicionLibre(Sistema s);
-Posicion posDelGranero(Campo c);
-bool estaLibre(Sistema s, Posicion p);
-Secuencia<Posicion> parcelasCultivo(Campo c);
-int cantCultivosCosechables(Sistema s);
+bool vecinoConPlaga(const Sistema &s, const Posicion &p);
+Secuencia<Posicion> posiblePosicionLibre(const Sistema &s);
+Posicion posDelGranero(const Campo &c);
+bool estaLibre(const Sistema &s, const Posicion &p);
+Secuencia<Posicion> parcelasCultivo(const Campo &c);
+int cantCultivosCosechables(const Sistema &s);
 
 Sistema::Sistema()
 {
@@ -141,21 +141,21 @@ bool vecinoConPlaga(Sistema s, Posicion p) //le pongo const a los parametros o n
 
 void Sistema::despegar(const Drone & d) //hay un requiere que dice que d debe pertenecer a Enjambre y que existe al menos una parcela libre.
 {
-	// Posicion p = posiblePosicionLibre(*this)[0];//estaria bueno que elija una posicion aleatoriamente...
-	// for (int i = 0; i < enjambreDrones().size(); ++i){
-	// 	if(enjambreDrones()[i] == d){
-	// 		_enjambre[i].vueloRealizado()[0] = p;		//me tira un error aca... puede ser _enjambre o enjambreDrones()
-	// 	}
-	// }
+	 Posicion p = posiblePosicionLibre(*this)[0];//estaria bueno que elija una posicion aleatoriamente...
+	 for (unsigned int i = 0; i < enjambreDrones().size(); ++i){
+		if(enjambreDrones()[i] == d){
+			_enjambre[i].moverA(p);		//falta implementar moverA
+	 	}
+	 }
 }
 //AUXILIARES
-Secuencia<Posicion> posiblePosicionLibre(Sistema s)
+Secuencia<Posicion> posiblePosicionLibre(const Sistema &s)
 {
 	Secuencia<Posicion> ps;
 	Posicion pos;
 	Posicion p = posDelGranero(s.campo());
-	for (int i = s.campo().dimensiones().largo; i >= 0; --i){
-		for (int j = 0; j < s.campo().dimensiones().ancho; ++j){
+	for (unsigned int i = s.campo().dimensiones().largo; i >= 0; --i){
+		for (unsigned int j = 0; j < s.campo().dimensiones().ancho; ++j){
 			pos.y = j;
 			pos.x = i;
 			bool esVecino = (((pos.y -1 == p.y)||(pos.y == p.y)||(pos.y+1 == p.y)) &&((pos.x == p.x)||(pos.x+1 == p.x)||(pos.x-1 == p.x)));//se podria mejorar, implementado la funcion distancia!
@@ -167,10 +167,10 @@ Secuencia<Posicion> posiblePosicionLibre(Sistema s)
 	return ps;
 }
 //AUXILIARES
-bool estaLibre(Sistema s, Posicion p) //se fija si una posicion 'p' esta libre de drones.
+bool estaLibre(const Sistema &s, const Posicion &p) //se fija si una posicion 'p' esta libre de drones.
 {
 	bool libre = true;
-	for (int i = 0; i < s.enjambreDrones().size(); ++i){
+	for (unsigned int i = 0; i < s.enjambreDrones().size(); ++i){
 		Posicion pos = s.enjambreDrones()[i].posicionActual();
 		if ((pos.x == p.x) && (pos.y == p.y)){
 			libre = false;
@@ -180,11 +180,11 @@ bool estaLibre(Sistema s, Posicion p) //se fija si una posicion 'p' esta libre d
 	return libre;
 }
 //AUXILIARES
-Posicion posDelGranero(Campo c)
+Posicion posDelGranero(const Campo &c);
 {
 	Posicion p;
-	for (int i = c.dimensiones().largo; i >= 0; --i){
-		for (int j = 0; j < c.dimensiones().ancho; ++j){
+	for (unsigned int i = c.dimensiones().largo; i >= 0; --i){
+		for (unsigned int j = 0; j < c.dimensiones().ancho; ++j){
 			Posicion pos;
 			pos.y = j;
 			pos.x = i;
@@ -205,32 +205,32 @@ bool Sistema::listoParaCosechar() const //de este ejercicio me encargo yo asi ha
 //AUXILIAR
 Secuencia<Posicion> parcelasCultivo(Campo c)
 {
-	Secuencia<Posicion> todosLosCultivos;
-	Posicion p;
-	int i = 0;
-	int j = c.dimensiones().largo -1;
-	while (j >= 0 && i < c.dimensiones().ancho){
+	Secuencia<Posicion> ts;
+	unsigned int i = 0;
+	unsigned int j = 0;
+	while (j < c.dimensiones().largo && i < c.dimensiones().ancho){
+		Posicion p;
 		p.y = j;
 		p.x = i;
 		if (c.contenido(p) == Cultivo){
-			todosLosCultivos.push_back(p);
+			ts.push_back(p);
 		}
 		if (j == 0){
-			j = c.dimensiones().largo -1;
+			j = 0;
 			i++;
 		}
 		else {
-			j--;
+			j++;
 		}
 	}
-	return todosLosCultivos;
+	return ts;
 }
 
 //AUXILIAR
-int cantCultivosCosechables(Sistema s)
+int cantCultivosCosechables(const Sistema &s);
 {
 	int res = 0;
-	int i = 0;
+	unsigned int i = 0;
 	while (i < parcelasCultivo(s.campo()).size()){
 		Posicion p = parcelasCultivo(s.campo())[i];
 		if (s.estadoDelCultivo(p) == ListoParaCosechar){ //error expected primary-expression before "=="...

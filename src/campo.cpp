@@ -5,6 +5,13 @@
 
 const char nombreAbreviado (const Parcela &parcela);
 
+Campo::Campo(const Posicion &posG, const Posicion &posC, Dimension dimension) {
+    _dimension = dimension;
+    _grilla = Grilla<Parcela>(_dimension);
+    _grilla.parcelas[posG.x][posG.y] = Granero;
+    _grilla.parcelas[posC.x][posC.y] = Casa;
+}
+
 Campo::Campo()
 {
 	// Creo aleatoriamente un granero y una casa (me aseguro de que sean diferentes)
@@ -148,69 +155,3 @@ std::ostream & operator<<(std::ostream & os, const Campo & c)
 	return os;
 }
 
-std::ostream & operator<<(std::ostream & os, const Parcela & p)
-{
-	switch (p)
-	{
-	case Cultivo:
-		os << "Cultivo";
-		break;
-	case Casa:
-		os << "Casa";
-		break;
-	case Granero:
-		os << "Granero";
-		break;
-	}
-	return os;
-}
-
-std::ostream & operator<<(std::ostream & os, const Producto & p)
-{
-	switch (p)
-	{
-		case Fertilizante:
-			os << "Fertilizante";
-			break;
-		case Plaguicida:
-			os << "Plaguicida";
-			break;
-		case PlaguicidaBajoConsumo:
-			os << "PlaguicidaBajoConsumo";
-			break;
-		case Herbicida:
-			os << "Herbicida";
-			break;
-		case HerbicidaLargoAlcance:
-			os << "HerbicidaLargoAlcance";
-			break;
-	}
-	return os;
-}
-
-std::ostream & operator<<(std::ostream & os, const EstadoCultivo & e)
-//{RecienSembrado, EnCrecimiento, ListoParaCosechar, ConMaleza, ConPlaga, NoSensado}
-{
-	switch (e)
-	{
-		case RecienSembrado:
-			os << "RecienSembrado";
-			break;
-		case EnCrecimiento:
-			os << "EnCrecimiento";
-			break;
-		case ListoParaCosechar:
-			os << "ListoParaCosechar";
-			break;
-		case ConMaleza:
-			os << "ConMaleza";
-			break;
-		case ConPlaga:
-			os << "ConPlaga";
-			break;
-		case NoSensado:
-			os << "NoSensado";
-			break;
-	}
-	return os;
-}
