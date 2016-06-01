@@ -132,22 +132,36 @@ void Drone::cargar(std::istream & is)
 
 void Drone::moverA(const Posicion pos)
 {
+	this->_trayectoria.push_back(pos);
 }
 
 void Drone::setBateria(const Carga c)
 {
+	this->_bateria = c;
 }
 
 void Drone::borrarVueloRealizado()
-{
+{//digo algo de enVuelo??
+	this->_trayectoria.clear();
 }
 
 void Drone::cambiarPosicionActual(const Posicion p)
-{
+{//requiere que no este en vuelo. No se entiende la especificacion...
+	this->_trayectoria.back() = p;
 }
 
 void Drone::sacarProducto(const Producto p)
 {
+	Secuencia<Producto> ps = productosDisponibles();
+
+	for (int i = 0; i < ps.size(); ++i)
+	{
+		if (ps[i] == p)
+		{
+			ps.erase(ps.begin()+i);
+			break;
+		}
+	}
 }
 
 bool Drone::operator==(const Drone & otroDrone) const
