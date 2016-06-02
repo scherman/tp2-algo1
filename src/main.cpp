@@ -82,6 +82,7 @@ void crearYCargarCampo() {
     std::ofstream file;
     file.open("drone.txt");
     campo.guardar(file);
+    file.close();
 
     Campo campo2;
     std::ifstream in("drone.txt");
