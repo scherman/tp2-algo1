@@ -2,7 +2,6 @@
 #include "campo.h"
 #include "drone.h"
 #include "sistema.h"
-#include "util.h"
 #include <fstream>
 
 using namespace std;
@@ -56,8 +55,8 @@ void compararDrones(){
     std::cout << "Drone1 == Drone2: " << (drone1 == drone2) << std::endl;
     std::cout << "Drone1 == Drone3: " << (drone1 == drone3) << std::endl;
     // std::cout << "mismosProductos(Drone1, Drone2)" << (Util::mismos(productos1, productos2)) << std::endl;
-    std::cout << "mismosProductos(Drone1, Drone2)" << (Util::mismos(productos1, productos2)) << std::endl;
-    std::cout << "mismosProductos(Drone1, Drone3)" << (Util::mismos(productos1, productos3)) << std::endl;
+    // std::cout << "mismosProductos(Drone1, Drone2)" << (Util::mismos(productos1, productos2)) << std::endl;
+    // std::cout << "mismosProductos(Drone1, Drone3)" << (Util::mismos(productos1, productos3)) << std::endl;
 
     Posicion pos1;
     pos1.x = 0;
@@ -80,12 +79,12 @@ void crearYCargarCampo() {
     Campo campo;
     campo.mostrar(std::cout);
     std::ofstream file;
-    file.open("drone.txt");
+    file.open("campo.txt");
     campo.guardar(file);
     file.close();
 
     Campo campo2;
-    std::ifstream in("drone.txt");
+    std::ifstream in("campo.txt");
     campo2.cargar(in);
     campo2.mostrar(std::cout);
     in.close();
