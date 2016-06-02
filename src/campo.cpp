@@ -98,7 +98,6 @@ const char nombreAbreviado (const Parcela &parcela) {
 }
 
 const Parcela aParcela (const std::string &parcela) {
-	std::cout << "Viene: " << parcela;
 	if (parcela == "Cultivo") return Cultivo;
 	if (parcela == "Casa") return Casa;
 	if (parcela == "Granero") return Granero;
@@ -124,23 +123,16 @@ std::vector<Parcela> split(const std::string &text, char sep) {
   std::size_t start = 0, end = 0;
   while ((end = text.find(sep, start)) != std::string::npos) {
 		std::string value = text.substr(start, end - start);
-Parcela parc = aParcela(value);
-			std::cout << "-> " <<  nombreAbreviado(parc) << std::endl;
-		tokens.push_back(parc);
+		tokens.push_back(aParcela(value));
     start = end + 1;
   }
-	Parcela parc2 = aParcela(text.substr(start));
-			std::cout << "-> " <<  nombreAbreviado(parc2) << std::endl;
-  tokens.push_back(parc2);
-
+  tokens.push_back(aParcela(text.substr(start)));
   return tokens;
 }
 
 void Campo::cargar(std::istream & is)
 {
 	std::string contenido, ancho, largo;
-
-	std::cout << "" << std::endl;
 
 	// Parseo dimensiones
 	std::getline(is, contenido, '[');
@@ -151,17 +143,14 @@ void Campo::cargar(std::istream & is)
 	Dimension dimension = {std::stoi(ancho), std::stoi(largo)};
 	Grilla<Parcela> grilla(dimension);
 	std::getline(is, contenido, '[');
-	for (int i = 0; std::getline(is, contenido, '['); i++) {
+	for (int j = this->_dimension.largo - 1; j >= 0; j--) {
+		std::getline(is, contenido, '[');
 		std::string fila;
 		std::getline(is, fila, ']');
-		std::cout << fila << std::endl;
-		std::vector<Parcela> vector = split(fila, ',');
-		for (int j = 0; j < vector.size(); j++) {
-			std::cout << nombreAbreviado(vector[j]) << ",";
-			std::cout << "[" << i << "," << j << "] = " << nombreAbreviado(vector[j]) <<  std::endl;
-			grilla.parcelas[j][i] == vector[j];
+		std::vector<Parcela> columnas = split(fila, ',');
+		for (int i = 0; i < this->_dimension.ancho; i++) {
+					grilla.parcelas[i][j] = columnas[i];
 		}
-		std::cout << std::endl;
 	}
 
 	// Modifico campo con lo cargado

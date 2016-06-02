@@ -87,8 +87,8 @@ void crearYCargarCampo() {
     Campo campo2;
     std::ifstream in("drone.txt");
     campo2.cargar(in);
-    in.close();
     campo2.mostrar(std::cout);
+    in.close();
 
 
 

@@ -1,1 +1,1 @@
-{ C [3,3] [[Cultivo,Granero,Cultivo], [Cultivo,Cultivo,Casa], [Cultivo,Cultivo,Cultivo]]}
+{ C [2,1] [[Granero,Casa]]}
