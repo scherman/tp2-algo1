@@ -2,6 +2,7 @@
 
 #include <algorithm> // Para funcion max
 #include "campo.h"
+#include <string>
 
 const char nombreAbreviado (const Parcela &parcela);
 
@@ -97,37 +98,26 @@ const char nombreAbreviado (const Parcela &parcela) {
 
 void Campo::guardar(std::ostream & os) const
 {
-	Posicion p;
-	os << "{ C  " << "[" << this->_dimension.ancho << "," << this->_dimension.largo << "] [";
-	for(int j = this->dimensiones().largo -1; j >= -1; --j){
-		if(j == -1){
-			os << "] }";
-			break;
+	os << "{ C " << "[" << this->_dimension.ancho << "," << this->_dimension.largo << "] ";
+	os << "[";
+	for (int j = this->_dimension.largo - 1; j >= 0; j--) {
+		os << "[" << this->contenido({j,0});
+		for (int i = 1; i < this->_dimension.ancho; i++) {
+			os << ", " << this->contenido({j,i});
 		}
-		os << "[";
-		for (int i = 0; i <this->dimensiones().ancho -1; ++i){
-			p.y = j;
-			p.x = i;
-			if(i != this->dimensiones().ancho -1){
-				os << this->contenido(p) << ",";
-			}
-			else{
-				if (j == 0){
-					os << this->contenido(p) << "]";
-				}
-				else {
-					os << this->contenido(p) << "] , ";
-				}
-			}
-		}
+		os << "], ";
 	}
+	os << "]}";
 }
-
-
-
 
 void Campo::cargar(std::istream & is)
 {
+	std::string output;
+	while(!is.eof) // To get you all the lines.
+	{
+		getline(is,output); // Saves the line in STRING.
+		std::cout<<output; // Prints our STRING.
+	}
 }
 
 bool Campo::operator==(const Campo & otroCampo) const
@@ -154,4 +144,3 @@ std::ostream & operator<<(std::ostream & os, const Campo & c)
 	c.mostrar(os);
 	return os;
 }
-

@@ -154,14 +154,14 @@ void Drone::cambiarPosicionActual(const Posicion p)
 
 void Drone::sacarProducto(const Producto p)
 {
-	for (int i = 0; i < this->_productos.size(); ++i)
-	{
-		if (this->_productos[i] == p)
-		{
-			this->_productos.erase(ps.begin()+i);
-			break;
-		}
-	}
+	// for (int i = 0; i < this->_productos.size(); ++i)
+	// {
+	// 	if (this->_productos[i] == p)
+	// 	{
+	// 		this->_productos.erase(ps.begin()+i);
+	// 		break;
+	// 	}
+	// }
 }
 
 bool Drone::operator==(const Drone & otroDrone) const

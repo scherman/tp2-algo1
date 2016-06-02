@@ -3,6 +3,7 @@
 #include "drone.h"
 #include "sistema.h"
 #include "util.h"
+#include <fstream>
 
 using namespace std;
 
@@ -10,10 +11,11 @@ void crearCampo();
 void crearDrone();
 void compararDrones();
 void crearSistema();
+void crearYCargarCampo();
 
 int main()
 {
-    crearSistema();
+    crearYCargarCampo();
     return 0;
 }
 
@@ -72,4 +74,21 @@ void compararDrones(){
 void crearSistema() {
     Sistema sistema;
     sistema.mostrar(std::cout);
+}
+
+void crearYCargarCampo() {
+    Campo campo;
+    campo.mostrar(std::cout);
+    std::ofstream file;
+    file.open("drone.txt");
+    campo.guardar(file);
+
+    Campo campo2;
+    std::ifstream in("drone.txt");
+    campo2.cargar(in);
+    in.close();
+    campo2.mostrar(std::cout);
+
+
+
 }
