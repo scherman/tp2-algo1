@@ -154,16 +154,16 @@ void Drone::cambiarPosicionActual(const Posicion p)
 
 void Drone::sacarProducto(const Producto p)
 {
-	// for (int i = 0; i < this->_productos.size(); ++i)
-	// {
-	// 	if (this->_productos[i] == p)
-	// 	{
-	// 		this->_productos.erase(ps.begin()+i);
-	// 		break;
-	// 	}
-	// }
+	for (int i = 0; i < this->_productos.size(); ++i)
+	{
+		if (this->_productos[i] == p)
+		{
+			this->_productos.erase(this->_productos.begin()+i);
+			break;
+		}
+	}
 }
-
+//me habia olvidado de cambiar ps por this->_productos en (this->_productos.begin()+i);
 bool Drone::operator==(const Drone & otroDrone) const
 {
 	bool mismosProductos = false;
