@@ -8,6 +8,9 @@ Posicion posDelGranero(const Campo &c);
 bool estaLibre(const Sistema &s, const Posicion &p);
 Secuencia<Posicion> parcelasCultivo(const Campo &c);
 int cantCultivosCosechables(const Sistema &s);
+int recorridoMaximo(const Sistema &s, const Drone &d);
+int cantFertilizantes(const Drone &d);
+int parcelasFertilizables(const Sistema &s, const int &i, const int &viaje);
 
 Sistema::Sistema()
 {
@@ -36,6 +39,9 @@ Sistema::Sistema()
 	}
 }
 
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 Sistema::Sistema(const Campo & c, const Secuencia<Drone>& ds)
 {
 	this->_campo = c;
@@ -54,20 +60,32 @@ Sistema::Sistema(const Campo & c, const Secuencia<Drone>& ds)
 
 }
 
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 const Campo & Sistema::campo() const
 {
 	return this->_campo;
 }
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 EstadoCultivo Sistema::estadoDelCultivo(const Posicion & p) const
 {
 		return this->_estado.parcelas[p.x][p.y];
 }
 
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 const Secuencia<Drone>& Sistema::enjambreDrones() const
 {
 	return this->_enjambre;
 }
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 void Sistema::crecer()
 {
@@ -85,7 +103,7 @@ void Sistema::crecer()
 				}
 				else{
 					if (estadoDelCultivo(p) == a){
-					this->_estado.parcelas[p.x][p.y] = b; //no me deja usar estadoDelCultivo(p) == b;
+					this->_estado.parcelas[p.x][p.y] = b; 
 					}
 				}
 			}
@@ -93,11 +111,14 @@ void Sistema::crecer()
 	}
 }
 
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 void Sistema::seVinoLaMaleza(const Secuencia<Posicion>& ps)
 {
 	//en la especificacion se REQUIERE que la lista ps solo contenga Parcelas de Cultivo...
 	EstadoCultivo c = ConMaleza;
-	for (int i = 0; i < ps.size(); ++i){
+	for (unsigned int i = 0; i < ps.size(); ++i){
 		Posicion p = ps[i];
 		this->_estado.parcelas[p.x][p.y] = c;
 	}
@@ -118,7 +139,7 @@ void Sistema::seExpandePlaga()
 	}
 }
 //AUXILIARES
-bool vecinoConPlaga(Sistema s, Posicion p) //le pongo const a los parametros o no??
+bool vecinoConPlaga(const Sistema &s, const Posicion &p) //le pongo const a los parametros o no??
 {
 	bool tieneUnVecinoConPlaga = false;
 	EstadoCultivo a = ConPlaga;
@@ -137,12 +158,15 @@ bool vecinoConPlaga(Sistema s, Posicion p) //le pongo const a los parametros o n
 	return tieneUnVecinoConPlaga;
 }
 
-
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 void Sistema::despegar(const Drone & d) //hay un requiere que dice que d debe pertenecer a Enjambre y que existe al menos una parcela libre.
 {
-	 Posicion p = posiblePosicionLibre(*this)[0];//estaria bueno que elija una posicion aleatoriamente...
-	 for (unsigned int i = 0; i < enjambreDrones().size(); ++i){
+	srand(time(NULL));
+	int x = rand() % (posiblePosicionLibre(*this).size());
+	Posicion p = posiblePosicionLibre(*this)[x];//estaria bueno que elija una posicion aleatoriamente...
+	for (unsigned int i = 0; i < enjambreDrones().size(); ++i){
 		if(enjambreDrones()[i] == d){
 			_enjambre[i].moverA(p);		//falta implementar moverA
 	 	}
@@ -172,7 +196,7 @@ bool estaLibre(const Sistema &s, const Posicion &p) //se fija si una posicion 'p
 	bool libre = true;
 	for (unsigned int i = 0; i < s.enjambreDrones().size(); ++i){
 		Posicion pos = s.enjambreDrones()[i].posicionActual();
-		if ((pos.x == p.x) && (pos.y == p.y)){
+		if ((pos.x == p.x) && (pos.y == p.y)){ //modificar luego de que tengamos el OPERADOR pos == pos1;
 			libre = false;
 			break;
 		}
@@ -180,7 +204,7 @@ bool estaLibre(const Sistema &s, const Posicion &p) //se fija si una posicion 'p
 	return libre;
 }
 //AUXILIARES
-Posicion posDelGranero(const Campo &c);
+Posicion posDelGranero(const Campo &c)
 {
 	Posicion p;
 	for (unsigned int i = c.dimensiones().largo; i >= 0; --i){
@@ -197,23 +221,26 @@ Posicion posDelGranero(const Campo &c);
 	return p;
 }
 
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 bool Sistema::listoParaCosechar() const //de este ejercicio me encargo yo asi hago el teorema del INVARIANTE y todo eso.
 {
 	bool res = ((cantCultivosCosechables(*this))/(parcelasCultivo(campo()).size())) >= 0.9;
 	return res;
 }
 //AUXILIAR
-Secuencia<Posicion> parcelasCultivo(Campo c)
+Secuencia<Posicion> parcelasCultivo(const Campo &c)
 {
-	Secuencia<Posicion> ts;
+	Secuencia<Posicion> res = {};
 	unsigned int i = 0;
 	unsigned int j = 0;
-	while (j < c.dimensiones().largo && i < c.dimensiones().ancho){
+	while ((j < c.dimensiones().largo) && (i < c.dimensiones().ancho)){
 		Posicion p;
 		p.y = j;
 		p.x = i;
 		if (c.contenido(p) == Cultivo){
-			ts.push_back(p);
+			res.push_back(p);
 		}
 		if (j == 0){
 			j = 0;
@@ -223,11 +250,11 @@ Secuencia<Posicion> parcelasCultivo(Campo c)
 			j++;
 		}
 	}
-	return ts;
+	return res;
 }
 
 //AUXILIAR
-int cantCultivosCosechables(const Sistema &s);
+int cantCultivosCosechables(const Sistema &s)
 {
 	int res = 0;
 	unsigned int i = 0;
@@ -241,13 +268,150 @@ int cantCultivosCosechables(const Sistema &s);
 	return res;
 }
 
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 void Sistema::aterrizarYCargarBaterias(Carga b)
+//requiere 0<=b<=100
 {
+	Carga c = 100;
+	Campo campo = this->_campo;
+	Posicion posG = posDelGranero(campo);
+	int i = 0;
+	for (int i = 0; i < enjambreDrones().size(); ++i)
+	{
+		if (enjambreDrones()[i].bateria() < b)
+		{
+			_enjambre[i].setBateria(c);
+			_enjambre[i].borrarVueloRealizado();
+			_enjambre[i].cambiarPosicionActual(posG);
+		}
+	}
 }
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 void Sistema::fertilizarPorFilas()
+//requiere que aLoSumoUnDroneVolandoPorFila
 {
+	//modifico los drones del sistema...
+	for (int i = 0; i < enjambreDrones().size(); ++i)
+	{
+		int viaje = recorridoMaximo(*this, enjambreDrones()[i]);
+		if (enjambreDrones()[i].enVuelo() == true)
+		{
+			int c = enjambreDrones()[i].bateria() - viaje;
+			Posicion p = {enjambreDrones()[i].posicionActual().x - viaje, enjambreDrones()[i].posicionActual().y};
+			this->_enjambre[i].moverA(p);
+			this->_enjambre[i].cambiarPosicionActual(p);
+			this->_enjambre[i].setBateria(c);
+				
+			//modifico el VueloRealizado...
+			int j = 1;
+			for (int j = 1; j < viaje; ++j)
+			{
+				Posicion pos =  {enjambreDrones()[i].posicionActual().x - j, enjambreDrones()[i].posicionActual().y};
+				this->_enjambre[i].moverA(pos);
+			}
+			//modifico ProductosDisponibles...
+			int h = 0;
+			int k = 0;
+			Producto pr = Fertilizante;				
+			while ((h < parcelasFertilizables(*this, i, viaje)) && (k < enjambreDrones()[i].productosDisponibles().size()))
+			{
+				if (enjambreDrones()[i].productosDisponibles()[k] == Fertilizante)
+				{
+					this->_enjambre[i].sacarProducto(pr);
+					h++;
+					k--;
+				}
+				k++;
+			}
+		}
+
+		for (int h = 0; h < campo().dimensiones().largo; ++h)
+		{
+			for (int j = 0; j < campo().dimensiones().ancho; ++j)
+			{
+				Posicion pos = {j,h};
+				if (enjambreDrones()[i].posicionActual() == pos)
+				{
+					for (int m = 0; m < viaje; m++)
+					{
+						Posicion ps = {j-m, h};
+						if ((estadoDelCultivo(ps) == EnCrecimiento) || (estadoDelCultivo(ps) == RecienSembrado))
+						{
+							this->_estado.parcelas[ps.x][ps.y] = ListoParaCosechar;	
+						}
+					}
+					//aca podria poner un break; ya que por el requiere no debe haber mas de 1 drone por fila...
+				}
+			}
+		}
+	}
+	
 }
+
+
+//AUXILIARES
+int recorridoMaximo(const Sistema &s, const Drone &d)
+{
+	int viaje = 0;
+	int h = d.posicionActual().x;
+	int k = d.posicionActual().y;
+	int carga = d.bateria();
+	int totalFertilizantes = cantFertilizantes(d);
+	for (int i = h; i >=0; --i)
+	{
+		Posicion p = {i, k};
+		if ((s.campo().contenido(p) != Cultivo) || (totalFertilizantes == 0) || (carga == 0))
+		{
+			viaje = h - i;
+			break;
+		}
+		else 
+		{
+			carga = carga - 1;
+			if ((s.estadoDelCultivo(p) == EnCrecimiento) || (s.estadoDelCultivo(p) == RecienSembrado))
+			{
+				totalFertilizantes = totalFertilizantes -1;
+			}
+		}
+	}
+	return viaje;
+}
+//AUXILIAR
+int cantFertilizantes(const Drone &d)
+{
+	int totalFertilizantes = 0;
+	for (unsigned int i = 0; i < d.productosDisponibles().size(); ++i)
+	{
+		if (d.productosDisponibles()[i] == Fertilizante)
+		{
+			totalFertilizantes++;
+		}
+	}
+	return totalFertilizantes;
+}
+
+int parcelasFertilizables(const Sistema &s, const int &i, const int &viaje)
+{
+	int cantFertilizables = 0;
+	int h = s.enjambreDrones()[i].posicionActual().x;
+	int k = s.enjambreDrones()[i].posicionActual().y;
+	for (int j = h; j >= 0; j--)
+	{
+		Posicion p = {j, k};
+		if ((s.estadoDelCultivo(p) == EnCrecimiento) || (s.estadoDelCultivo(p) == RecienSembrado))
+		{
+			cantFertilizables++;
+		}
+	}
+	return cantFertilizables;
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 void Sistema::volarYSensar(const Drone & d)
 {
