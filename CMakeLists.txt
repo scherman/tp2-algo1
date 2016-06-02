@@ -1,15 +1,9 @@
-project(src)
+cmake_minimum_required(VERSION 2.8)
+project(tpi)
 
-set(SOURCE_FILES
-        tipos.h
-        tipos.cpp
-        campo.h
-        campo.cpp
-        drone.h
-        drone.cpp
-        sistema.h
-        sistema.cpp
-        aux.h
-        aux.cpp)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -ggdb3")
 
-add_library(src ${SOURCE_FILES})
+include_directories(src)
+
+add_subdirectory(tests)
+add_subdirectory(src)
