@@ -132,6 +132,7 @@ void Drone::cargar(std::istream & is)
 
 void Drone::moverA(const Posicion pos)
 {
+	//o uso _cambiarPosicionActual????
 	this->_trayectoria.push_back(pos);
 }
 
@@ -142,23 +143,22 @@ void Drone::setBateria(const Carga c)
 
 void Drone::borrarVueloRealizado()
 {//digo algo de enVuelo??
+	this->_enVuelo = false;
 	this->_trayectoria.clear();
 }
 
 void Drone::cambiarPosicionActual(const Posicion p)
 {//requiere que no este en vuelo. No se entiende la especificacion...
-	this->_trayectoria.back() = p;
+	this->_posicionActual = p;
 }
 
 void Drone::sacarProducto(const Producto p)
 {
-	Secuencia<Producto> ps = productosDisponibles();
-
-	for (int i = 0; i < ps.size(); ++i)
+	for (int i = 0; i < this->_productos.size(); ++i)
 	{
-		if (ps[i] == p)
+		if (this->_productos[i] == p)
 		{
-			ps.erase(ps.begin()+i);
+			this->_productos.erase(ps.begin()+i);
 			break;
 		}
 	}
