@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <iostream>
 #include "campo.h"
+#include "aux.h"
 
 Drone::Drone()
 {
@@ -10,14 +11,11 @@ Drone::Drone()
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 Drone::Drone(ID i, const std::vector<Producto>& ps)
 {
-	Posicion pos1 = {0,1};
-	Posicion pos2 = {1,1};
-	Secuencia<Posicion> tr = {pos1, pos2};
 	this->_id = i;
 	this->_productos = ps;
 	this->_bateria = 100;
 	this->_enVuelo = false;
-	this->_trayectoria = tr;
+	// this->_trayectoria = tr;
 
 	 /*srand(time(NULL));
 	 Posicion pos0;
@@ -95,15 +93,16 @@ const Secuencia<Producto>& Drone::productosDisponibles() const
 bool Drone::vueloEscalerado() const
 {
 	bool escalerado = true;
-	if (this->_trayectoria.size() >= 2) {
-		for (int i = 0; i < (this->_trayectoria.size()-2); i++) {
-			int deltaX = this->_trayectoria[i].x - this->_trayectoria [i+2].x;
-			int deltaY = this->_trayectoria[i].y - this->_trayectoria [i+2].y;
+	if (vueloRealizado().size() >= 2) {
+		int i = 0;
+		while (i < vueloRealizado().size() - 2) {
+			int deltaX = vueloRealizado()[i].x - vueloRealizado() [i+2].x;
+			int deltaY = vueloRealizado()[i].y - vueloRealizado() [i+2].y;
 			if ((deltaX != 1) && (deltaX != -1)) escalerado = false;
 			if ((deltaX != 1) && (deltaX != -1)) escalerado = false;
+			i++;
 		}
 	}
-
 	return enVuelo() && escalerado;
 }
 
@@ -120,21 +119,18 @@ Secuencia<InfoVueloCruzado> Drone::vuelosCruzados(const Secuencia<Drone>& ds)
 
 void Drone::mostrar(std::ostream & os) const
 {
-	os << "Id del Drone: " << id() << " | Su bateria es: " << bateria();
-	os << " | Trayectoria realizada: [ ";
-	for (int i = 0; i < vueloRealizado().size(); ++i) {
-		if (i == vueloRealizado().size() -1) {
-			os << "[" << vueloRealizado()[i].x << "," << vueloRealizado()[i].y << "] ]";
-			break;
-		}
-		os << "[" << vueloRealizado()[i].x << "," << vueloRealizado()[i].y << "] , ";
+	os << "ID: " << id() << " | Bateria: " << bateria();
+	os << " | Trayectoria: [";
+	if (vueloRealizado().size() > 0) os << vueloRealizado()[0];
+	for (int i = 1; i < vueloRealizado().size(); ++i) {
+		os << "," << vueloRealizado()[i];
 	}
-
-	os << " | Lista de Productos:\n";
-	for (int j = 0; j < productosDisponibles().size(); ++j) {
-		os << productosDisponibles()[j];
-		os << "\n";
+	os << "] | Productos: [";
+	if (productosDisponibles().size() > 0) os << productosDisponibles()[0];
+	for (int j = 1; j < productosDisponibles().size(); ++j) {
+		os << "," << productosDisponibles()[j];
 	}
+	os << "] \n";
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -143,21 +139,17 @@ void Drone::mostrar(std::ostream & os) const
 void Drone::guardar(std::ostream & os) const
 {
 	os << "{ D " << id() << " "<< bateria() << " " << "[";
-	for (int i = 0; i < vueloRealizado().size(); ++i) {
-		if (i == vueloRealizado().size() -1) {
-			os << "[" << vueloRealizado()[i].x << "," << vueloRealizado()[i].y << "]]";
-			break;
-		}
-		os << "[" << vueloRealizado()[i].x << "," << vueloRealizado()[i].y << "] , ";
+	if (vueloRealizado().size() > 0) os << vueloRealizado()[0];
+	for (int i = 1; i < vueloRealizado().size(); ++i) {
+		os << "," << vueloRealizado()[i];
 	}
-	os << " [";
-	for (int j = 0; j < productosDisponibles().size(); ++j) {
-		if (j == productosDisponibles().size() -1){
-			os << productosDisponibles()[j] << "]}";
-			break;
-		}
-		os << productosDisponibles()[j] << ", ";
+	os << "] [";
+
+	if (productosDisponibles().size() > 0) os << productosDisponibles()[0];
+	for (int j = 1; j < productosDisponibles().size(); ++j) {
+		os << "," << productosDisponibles()[j];
 	}
+	os << "] " << enVuelo() << " " << posicionActual() << "}";
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -173,6 +165,7 @@ void Drone::cargar(std::istream & is)
 void Drone::moverA(const Posicion pos)
 {
 	//o uso _cambiarPosicionActual????
+	this->_enVuelo = true;
 	this->_trayectoria.push_back(pos);
 }
 

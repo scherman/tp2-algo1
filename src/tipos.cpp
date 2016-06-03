@@ -4,15 +4,15 @@ std::ostream & operator<<(std::ostream & os, const Parcela & p)
 {
 	switch (p)
 	{
-	case Cultivo:
-		os << "Cultivo";
-		break;
-	case Casa:
-		os << "Casa";
-		break;
-	case Granero:
-		os << "Granero";
-		break;
+		case Cultivo:
+			os << "Cultivo";
+			break;
+		case Casa:
+			os << "Casa";
+			break;
+		case Granero:
+			os << "Granero";
+			break;
 	}
 	return os;
 }

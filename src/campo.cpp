@@ -173,9 +173,9 @@ std::vector<Parcela> split(const std::string &text, char sep) {
 
 //AUXILIARES
 const Parcela aParcela (const std::string &parcela) {
-	if (parcela == "Cultivo") return Cultivo;
-	if (parcela == "Casa") return Casa;
-	if (parcela == "Granero") return Granero;
+	if (parcela.find("Cultivo") != std::string::npos) return Cultivo;
+	if (parcela.find("Casa") != std::string::npos) return Casa;
+	if (parcela.find("Granero") != std::string::npos) return Granero;
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
