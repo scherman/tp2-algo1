@@ -37,9 +37,10 @@ class Drone{
 				Secuencia<Posicion> _trayectoria;
 				Secuencia<Producto> _productos;
 				bool _enVuelo;
-				Posicion _posicionActual;                 
-};
+				Posicion _posicionActual;
 
+};
+int cuentaDrones(const Producto p, const Secuencia<Producto> ps);
 // Definirlo usando mostrar, para poder usar << con este tipo.
 std::ostream & operator<<(std::ostream & os,const Drone & d);
 

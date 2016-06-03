@@ -14,7 +14,11 @@ void crearYCargarCampo();
 
 int main()
 {
-    crearYCargarCampo();
+    crearSistema();
+    crearDrone();
+    crearCampo();
+    compararDrones();
+    //crearYCargarCampo();
     return 0;
 }
 
@@ -45,25 +49,22 @@ void crearDrone(){
 
 void compararDrones(){
     ID id = 15;
-    Secuencia<Producto> productos1 = {Fertilizante, Plaguicida, PlaguicidaBajoConsumo, Fertilizante};
-    Secuencia<Producto> productos2 = {Plaguicida, Fertilizante, PlaguicidaBajoConsumo, Fertilizante};
-    Secuencia<Producto> productos3 = {Fertilizante};
+    Secuencia<Producto> productos1 = {Fertilizante, Plaguicida,PlaguicidaBajoConsumo, Fertilizante};
+    Secuencia<Producto> productos2 = {Fertilizante, Fertilizante, Plaguicida, PlaguicidaBajoConsumo};
+    Secuencia<Producto> productos3 = {Fertilizante, Fertilizante, Fertilizante, Plaguicida};
+    Secuencia<Producto> productos4 = {Fertilizante, Fertilizante, Fertilizante};
     Drone drone1 (id, productos1);
     Drone drone2 (id, productos2);
     Drone drone3 (id, productos3);
+    Drone drone4 (id, productos4);
     std::cout << "Drone1 == Drone1: " << (drone1 == drone1) << std::endl;
     std::cout << "Drone1 == Drone2: " << (drone1 == drone2) << std::endl;
     std::cout << "Drone1 == Drone3: " << (drone1 == drone3) << std::endl;
-    // std::cout << "mismosProductos(Drone1, Drone2)" << (Util::mismos(productos1, productos2)) << std::endl;
-    // std::cout << "mismosProductos(Drone1, Drone2)" << (Util::mismos(productos1, productos2)) << std::endl;
-    // std::cout << "mismosProductos(Drone1, Drone3)" << (Util::mismos(productos1, productos3)) << std::endl;
+    std::cout << "Drone1 == Drone4: " << (drone1 == drone4) << std::endl;
 
-    Posicion pos1;
-    pos1.x = 0;
-    pos1.y = 1;
-    Posicion pos2;
-    pos2.x = 1;
-    pos2.y = 1;
+
+    Posicion pos1 = {0,1};
+    Posicion pos2 = {1,1};
     Secuencia<Posicion> secuencia1 = {pos1, pos2};
     std::cout << "Trayectoria == trayectoria: " << (secuencia1 == secuencia1) <<  std::endl;
 

@@ -59,8 +59,17 @@ private:
     friend class test_sistema_volar_y_sensar_todo_libre_Test;
 
     // --> Defina sus funciones auxiliares debajo...
-};
 
+};
+bool vecinoConPlaga(const Sistema &s, const Posicion &p);
+Secuencia<Posicion> posiblePosicionLibre(const Sistema &s);
+Posicion posDelGranero(const Campo &c);
+bool estaLibre(const Sistema &s, const Posicion &p);
+Secuencia<Posicion> parcelasCultivo(const Campo &c);
+int cantCultivosCosechables(const Sistema &s);
+int recorridoMaximo(const Sistema &s, const Drone &d);
+int cantFertilizantes(const Drone &d);
+int parcelasFertilizables(const Sistema &s, const int &i, const int &viaje);
 // Definirlo usando mostrar, para poder usar << con este tipo.
 std::ostream &operator<<(std::ostream &os, const Sistema &s);
 

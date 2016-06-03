@@ -5,15 +5,15 @@
 #include <map>
 #include <string>
 
-const char nombreAbreviado (const Parcela &parcela);
-const Parcela aParcela (const std::string &parcela);
-
 Campo::Campo(const Posicion &posG, const Posicion &posC, Dimension dimension) {
     _dimension = dimension;
     _grilla = Grilla<Parcela>(_dimension);
     _grilla.parcelas[posG.x][posG.y] = Granero;
     _grilla.parcelas[posC.x][posC.y] = Casa;
 }
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 Campo::Campo()
 {
@@ -47,6 +47,9 @@ Campo::Campo()
 	this->_grilla.parcelas[posC.x][posC.y] = Casa;
 }
 
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 Campo::Campo(const Posicion &posG, const Posicion &posC)
 {
 	// Dimensiono campo.
@@ -68,15 +71,24 @@ Campo::Campo(const Posicion &posG, const Posicion &posC)
 	this->_grilla.parcelas[posC.x][posC.y] = Casa;
 }
 
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 Dimension Campo::dimensiones() const
 {
 	return this->_dimension;
 }
 
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 Parcela Campo::contenido(const Posicion & p) const
 {
 	return this->_grilla.parcelas[p.x][p.y];
 }
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 void Campo::mostrar(std::ostream & os) const
 {
@@ -88,7 +100,7 @@ void Campo::mostrar(std::ostream & os) const
 		os << "\n";
 	}
 }
-
+//AUXILIARES
 const char nombreAbreviado (const Parcela &parcela) {
 	switch (parcela) {
 		case Cultivo: return '-';
@@ -97,12 +109,8 @@ const char nombreAbreviado (const Parcela &parcela) {
 	}
 }
 
-const Parcela aParcela (const std::string &parcela) {
-	if (parcela == "Cultivo") return Cultivo;
-	if (parcela == "Casa") return Casa;
-	if (parcela == "Granero") return Granero;
-}
-
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 void Campo::guardar(std::ostream & os) const
 {
@@ -118,17 +126,9 @@ void Campo::guardar(std::ostream & os) const
 	os << "]}";
 }
 
-std::vector<Parcela> split(const std::string &text, char sep) {
-  std::vector<Parcela> tokens;
-  std::size_t start = 0, end = 0;
-  while ((end = text.find(sep, start)) != std::string::npos) {
-		std::string value = text.substr(start, end - start);
-		tokens.push_back(aParcela(value));
-    start = end + 1;
-  }
-  tokens.push_back(aParcela(text.substr(start)));
-  return tokens;
-}
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 
 void Campo::cargar(std::istream & is)
 {
@@ -158,6 +158,29 @@ void Campo::cargar(std::istream & is)
 	this->_dimension = dimension;
 }
 
+//AUXILIARES
+std::vector<Parcela> split(const std::string &text, char sep) {
+  std::vector<Parcela> tokens;
+  std::size_t start = 0, end = 0;
+  while ((end = text.find(sep, start)) != std::string::npos) {
+		std::string value = text.substr(start, end - start);
+		tokens.push_back(aParcela(value));
+    start = end + 1;
+  }
+  tokens.push_back(aParcela(text.substr(start)));
+  return tokens;
+}
+
+//AUXILIARES
+const Parcela aParcela (const std::string &parcela) {
+	if (parcela == "Cultivo") return Cultivo;
+	if (parcela == "Casa") return Casa;
+	if (parcela == "Granero") return Granero;
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 bool Campo::operator==(const Campo & otroCampo) const
 {
 	Posicion p;
@@ -176,6 +199,9 @@ bool Campo::operator==(const Campo & otroCampo) const
 	}
 	return mismoContenido;
 }
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 std::ostream & operator<<(std::ostream & os, const Campo & c)
 {

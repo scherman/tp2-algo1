@@ -29,7 +29,9 @@ private:
 
     // --> Defina sus funciones auxiliares debajo...
 };
-
+const char nombreAbreviado (const Parcela &parcela);
+const Parcela aParcela (const std::string &parcela);
+std::vector<Parcela> split(const std::string &text, char sep);
 // Definirlo usando mostrar, para poder usar << con este tipo.
 std::ostream &operator<<(std::ostream &os, const Campo &c);
 

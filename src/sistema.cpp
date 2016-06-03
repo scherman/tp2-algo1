@@ -1,17 +1,6 @@
 #include "sistema.h"
 #include <algorithm>
 
-//estos ahi que agregarlos en la parte privada despues! Y pasar las funciones a un aux.cpp?
-bool vecinoConPlaga(const Sistema &s, const Posicion &p);
-Secuencia<Posicion> posiblePosicionLibre(const Sistema &s);
-Posicion posDelGranero(const Campo &c);
-bool estaLibre(const Sistema &s, const Posicion &p);
-Secuencia<Posicion> parcelasCultivo(const Campo &c);
-int cantCultivosCosechables(const Sistema &s);
-int recorridoMaximo(const Sistema &s, const Drone &d);
-int cantFertilizantes(const Drone &d);
-int parcelasFertilizables(const Sistema &s, const int &i, const int &viaje);
-
 Sistema::Sistema()
 {
 	this->_campo = Campo();
@@ -103,7 +92,7 @@ void Sistema::crecer()
 				}
 				else{
 					if (estadoDelCultivo(p) == a){
-					this->_estado.parcelas[p.x][p.y] = b; 
+					this->_estado.parcelas[p.x][p.y] = b;
 					}
 				}
 			}
@@ -305,7 +294,7 @@ void Sistema::fertilizarPorFilas()
 			this->_enjambre[i].moverA(p);
 			this->_enjambre[i].cambiarPosicionActual(p);
 			this->_enjambre[i].setBateria(c);
-				
+
 			//modifico el VueloRealizado...
 			int j = 1;
 			for (int j = 1; j < viaje; ++j)
@@ -316,7 +305,7 @@ void Sistema::fertilizarPorFilas()
 			//modifico ProductosDisponibles...
 			int h = 0;
 			int k = 0;
-			Producto pr = Fertilizante;				
+			Producto pr = Fertilizante;
 			while ((h < parcelasFertilizables(*this, i, viaje)) && (k < enjambreDrones()[i].productosDisponibles().size()))
 			{
 				if (enjambreDrones()[i].productosDisponibles()[k] == Fertilizante)
@@ -341,7 +330,7 @@ void Sistema::fertilizarPorFilas()
 						Posicion ps = {j-m, h};
 						if ((estadoDelCultivo(ps) == EnCrecimiento) || (estadoDelCultivo(ps) == RecienSembrado))
 						{
-							this->_estado.parcelas[ps.x][ps.y] = ListoParaCosechar;	
+							this->_estado.parcelas[ps.x][ps.y] = ListoParaCosechar;
 						}
 					}
 					//aca podria poner un break; ya que por el requiere no debe haber mas de 1 drone por fila...
@@ -349,7 +338,7 @@ void Sistema::fertilizarPorFilas()
 			}
 		}
 	}
-	
+
 }
 
 
@@ -369,7 +358,7 @@ int recorridoMaximo(const Sistema &s, const Drone &d)
 			viaje = h - i;
 			break;
 		}
-		else 
+		else
 		{
 			carga = carga - 1;
 			if ((s.estadoDelCultivo(p) == EnCrecimiento) || (s.estadoDelCultivo(p) == RecienSembrado))
@@ -441,13 +430,13 @@ void Sistema::guardar(std::ostream & os) const
 	//puedo llamar directamente a guardar del CAMPO?? campo().guardar(os)...
 	campo().guardar(os);
 	//puedo llamar directamente a guardar del DRONE?? enjambreDrones()[i].guardar(os)...
-	os << " ["; 
+	os << " [";
 	for (int i = 0; i < enjambreDrones().size();++i)
 	{
 		if (i != enjambreDrones().size() - 1){
 			enjambreDrones()[i].guardar(os);
 			os << " , ";
-		
+
 		}
 		else {
 			enjambreDrones()[i].guardar(os);
