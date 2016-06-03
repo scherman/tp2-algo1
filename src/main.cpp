@@ -96,15 +96,15 @@ void crearYCargarCampo() {
 void crearYCargarDrone() {
     Secuencia<Producto> productos1 = {Fertilizante, Plaguicida,PlaguicidaBajoConsumo, Fertilizante};
     Drone drone1 (15, productos1);
-    drone1.cambiarPosicionActual({4, 4});
-    drone1.moverA({4, 5});
-    drone1.moverA({3, 5});
-    drone1.moverA({3, 6});
-    drone1.moverA({2, 6});
+    drone1.moverA({0,1});
     drone1.mostrar(std::cout);
-    std::cout << "Escalerado: " << drone1.vueloEscalerado() << std::endl;
     std::ofstream file;
     file.open("drone.txt");
     drone1.guardar(file);
     file.close();
+    Drone drone2;
+    std::ifstream in("drone.txt");
+    drone2.cargar(in);
+    drone2.mostrar(std::cout);
+    in.close();
 }

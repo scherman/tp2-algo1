@@ -2,10 +2,15 @@
 #include <cstdlib>
 #include <iostream>
 #include "campo.h"
+#include <algorithm>
 #include "aux.h"
 
 Drone::Drone()
 {
+	this->_id = rand() % 200;
+	this->_productos = {Fertilizante, Fertilizante, PlaguicidaBajoConsumo};
+	this->_bateria = 100;
+	this->_enVuelo = false;
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -139,6 +144,7 @@ void Drone::mostrar(std::ostream & os) const
 void Drone::guardar(std::ostream & os) const
 {
 	os << "{ D " << id() << " "<< bateria() << " " << "[";
+
 	if (vueloRealizado().size() > 0) os << vueloRealizado()[0];
 	for (int i = 1; i < vueloRealizado().size(); ++i) {
 		os << "," << vueloRealizado()[i];
@@ -149,14 +155,40 @@ void Drone::guardar(std::ostream & os) const
 	for (int j = 1; j < productosDisponibles().size(); ++j) {
 		os << "," << productosDisponibles()[j];
 	}
-	os << "] " << enVuelo() << " " << posicionActual() << "}";
+	os << "] " << (enVuelo()? "true" : "false") << " " << posicionActual()  << "}"; // ROMPE SI NO HAY POSICIONACTUAL
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
+// Recibe un string de forma "[x,y]" (o sin los corchetes) y devuelve una Posicion {x,y}
+Posicion split(const std::string &text){
+	// MEJORA: Si viene con espacios se rompe
+  int start = text.find('[') != std::string::npos ? text.find('[') : 0;
+  int end = text.find(']') != std::string::npos ? text.find(']') : text.size();
+  int sep = text.find(',');
+	std::string x = text.substr(start + 1, sep - 1);
+	std::string y = text.substr(sep + 1, end - 1);
+	return {std::stoi(x), std::stoi(y)};
+}
+
 void Drone::cargar(std::istream & is)
 {
+		std::string contenido, id, bateria;
+		std::getline(is, contenido, ' ');
+		std::getline(is, contenido, ' ');
+		std::getline(is, id, ' ');
+		std::getline(is, bateria, ' ');
+		std::getline(is, contenido, '[');
+		Secuencia<Posicion> trayectoria;
+		while(contenido[0] != ']'){
+			std::string posicion;
+			std::getline(is, posicion, ']');
+			trayectoria.push_back(split(posicion));
+			std::getline(is, contenido);
+		}
+
+		this->_trayectoria = trayectoria;
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
