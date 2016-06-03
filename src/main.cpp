@@ -12,6 +12,7 @@ void compararDrones();
 void crearSistema();
 void crearYCargarCampo();
 void crearYCargarDrone();
+void compararSistemas();
 
 int main()
 {
@@ -21,6 +22,7 @@ int main()
     // compararDrones();
     // crearYCargarCampo();
     crearYCargarDrone();
+    compararDrones();
     return 0;
 }
 
@@ -76,6 +78,32 @@ void compararDrones(){
 void crearSistema() {
     Sistema sistema;
     sistema.mostrar(std::cout);
+}
+
+void compararSistemas(){
+    Posicion posG, posC;
+    posG.x = 3;
+    posG.y = 2;
+    posC.x = 4;
+    posC.y = 1;
+    Campo c = {posG, posC};
+
+    ID id = 15;
+    Secuencia<Producto> productos = {Fertilizante, Plaguicida, PlaguicidaBajoConsumo, Fertilizante};
+    Drone drone1 (id, productos);
+    ID id1 = 15;
+    Secuencia<Producto> productos1 = {Fertilizante, Fertilizante, PlaguicidaBajoConsumo, Plaguicida};
+    Drone drone2 (id1, productos1);
+    Secuencia<Drone> drones1 = {drone1};
+    Secuencia<Drone> drones2 = {drone2};
+    Secuencia<Drone> drones3 = {drone2,drone1};
+
+    Sistema sist1 (c, drones1);
+    Sistema sist2 (c, drones2);
+    Sistema sist3 (c, drones3);
+    std::cout << "Sistema1 == Sistema1: " << (sist1 == sist1) << std::endl;
+    std::cout << "Sistema1 == Sistema2: " << (sist1 == sist2) << std::endl;
+    std::cout << "Sistema2 == Sistema3: " << (sist2 == sist3) << std::endl;
 }
 
 void crearYCargarCampo() {

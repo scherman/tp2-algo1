@@ -221,15 +221,13 @@ bool Sistema::listoParaCosechar() const //de este ejercicio me encargo yo asi ha
 //AUXILIAR
 Secuencia<Posicion> parcelasCultivo(const Campo &c)
 {
-	Secuencia<Posicion> res = {};
-	unsigned int i = 0;
-	unsigned int j = 0;
+	Secuencia<Posicion> ts = {};
+	int i = 0;
+	int j = 0;
 	while ((j < c.dimensiones().largo) && (i < c.dimensiones().ancho)){
-		Posicion p;
-		p.y = j;
-		p.x = i;
+		Posicion p = {i,j};
 		if (c.contenido(p) == Cultivo){
-			res.push_back(p);
+			ts.push_back(p);
 		}
 		if (j == 0){
 			j = 0;
@@ -239,7 +237,7 @@ Secuencia<Posicion> parcelasCultivo(const Campo &c)
 			j++;
 		}
 	}
-	return res;
+	return ts;
 }
 
 //AUXILIAR
@@ -461,10 +459,52 @@ void Sistema::cargar(std::istream & is)
 {
 }
 
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 bool Sistema::operator==(const Sistema & otroSistema) const
 {
-	return false;
+	bool mismoCampo = true;
+	if(!(campo() == otroSistema.campo())) return false;
+
+	bool mismosAviones = true;
+	if (!(mismosDrones(enjambreDrones(), otroSistema.enjambreDrones()))) return false;
+
+	bool mismosEstados = true;
+	for(int i = 0; i < parcelasCultivo(campo()).size(); ++i){
+		if(estadoDelCultivo(parcelasCultivo(campo())[i]) != estadoDelCultivo(parcelasCultivo(otroSistema.campo())[i])) return false;
+	}
+	return (mismoCampo && mismosAviones && mismosEstados);
 }
+
+//AUXILIARES
+bool mismosDrones(const Secuencia<Drone> ps, const Secuencia<Drone> ds)
+{
+	bool mismos = false;
+	if (ps.size() == ds.size()){
+		for (int i = 0; i < ps.size(); ++i){
+			if ((i > 0) && (mismos == false)) break;
+			for (int j = 0; j < ds.size(); ++j){
+				if((ps[i] == ds[j]) && (cuentaDron(ps[i], ps) == cuentaDron(ds[j], ds))){
+					mismos = true;
+				}
+			}
+		}
+	}
+	return mismos;
+}
+//AUXILIARES
+bool cuentaDron(const Drone d, const Secuencia<Drone> ds)
+{
+	bool count = 0;
+	for(int i = 0; i < ds.size(); ++i){
+		if (ds[i] == d) count;
+	}
+	return count;
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 std::ostream & operator<<(std::ostream & os, const Sistema & s)
 {
