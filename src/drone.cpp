@@ -155,40 +155,83 @@ void Drone::guardar(std::ostream & os) const
 	for (int j = 1; j < productosDisponibles().size(); ++j) {
 		os << "," << productosDisponibles()[j];
 	}
-	os << "] " << (enVuelo()? "true" : "false") << " " << posicionActual()  << "}"; // ROMPE SI NO HAY POSICIONACTUAL
+	os << "] " << (enVuelo()? "true" : "false") << " " << posicionActual()  << "}";
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 // Recibe un string de forma "[x,y]" (o sin los corchetes) y devuelve una Posicion {x,y}
-Posicion split(const std::string &text){
+Posicion splitPosicion(const std::string &posicion){
 	// MEJORA: Si viene con espacios se rompe
-  int start = text.find('[') != std::string::npos ? text.find('[') : 0;
-  int end = text.find(']') != std::string::npos ? text.find(']') : text.size();
-  int sep = text.find(',');
-	std::string x = text.substr(start + 1, sep - 1);
-	std::string y = text.substr(sep + 1, end - 1);
+	std::string parseado = posicion;
+	parseado = posicion.find('[') != std::string::npos ? posicion.substr(posicion.find('[') + 1, -1) : parseado;
+	parseado = posicion.find(']') != std::string::npos ? posicion.substr(0, posicion.find(']') - 1) : parseado;
+  int sep = parseado.find(',');
+	std::string x = parseado.substr(0, sep);
+	std::string y = parseado.substr(sep + 1, -1);
 	return {std::stoi(x), std::stoi(y)};
+}
+
+const Producto aProducto (const std::string &producto) {
+	if (producto.find("Fertilizante") != std::string::npos) return Fertilizante;
+	if (producto.find("PlaguicidaBajoConsumo") != std::string::npos) return PlaguicidaBajoConsumo;
+	if (producto.find("Plaguicida") != std::string::npos) return Plaguicida;
+	if (producto.find("HerbicidaLargoAlcance") != std::string::npos) return HerbicidaLargoAlcance;
+	if (producto.find("Herbicida") != std::string::npos) return Herbicida;
+}
+
+// Recibe un string de forma "Producto,Producto,Producto" (o sin los corchetes) y devuelve Secuencia<Producto>
+Secuencia<Producto> splitProductos(const std::string &productos){
+	// MEJORA: Si viene con espacios se rompe
+	std::string parseado = productos;
+		// std::cout << "parseado: " << parseado << std::endl;
+	int sep = parseado.find(',');
+		// std::cout << "sep?: " << (sep != std::string::npos) << std::endl;
+	Secuencia<Producto> resultado;
+	while (sep != std::string::npos) {
+		// std::cout << "aProducto: " << parseado.substr(0, sep) << std::endl;
+		Producto producto = aProducto(parseado.substr(0, sep));
+		resultado.push_back(producto);
+		parseado = parseado.substr(sep + 1, -1);
+		// std::cout << "------" << std::endl;
+		// std::cout << "parseado: " << parseado << std::endl;
+		sep = parseado.find(',');
+		// std::cout << "sep?: " << (sep != std::string::npos) << std::endl;
+	}
+	resultado.push_back(aProducto(parseado.substr(0,-1)));
+	return resultado;
 }
 
 void Drone::cargar(std::istream & is)
 {
-		std::string contenido, id, bateria;
+		std::string contenido, id, bateria, productos, enVuelo, posicionActual;
 		std::getline(is, contenido, ' ');
 		std::getline(is, contenido, ' ');
 		std::getline(is, id, ' ');
 		std::getline(is, bateria, ' ');
 		std::getline(is, contenido, '[');
-		Secuencia<Posicion> trayectoria;
+		this->_id = std::stoi(id);
+		this->_bateria = std::stoi(bateria);
+
+
+		// Parseo
 		while(contenido[0] != ']'){
 			std::string posicion;
 			std::getline(is, posicion, ']');
-			trayectoria.push_back(split(posicion));
-			std::getline(is, contenido);
+			this->_trayectoria.push_back(splitPosicion(posicion));
+			std::getline(is, contenido, '[');
 		}
 
-		this->_trayectoria = trayectoria;
+		// Parseo productos
+		std::getline(is, productos, ']');
+		this->_productos = splitProductos(productos);
+
+		std::getline(is, enVuelo, '[');
+		this->_enVuelo = enVuelo.find("true") != std::string::npos ? true : false;
+
+		std::getline(is, posicionActual, ']');
+		this->_posicionActual = splitPosicion(posicionActual);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
