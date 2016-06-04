@@ -22,7 +22,7 @@ int main()
     // compararDrones();
     // crearYCargarCampo();
     crearYCargarDrone();
-    compararDrones();
+    // compararDrones();
     return 0;
 }
 
@@ -125,6 +125,7 @@ void crearYCargarDrone() {
     Secuencia<Producto> productos1 = {Fertilizante, Plaguicida,PlaguicidaBajoConsumo, Fertilizante};
     Drone drone1 (15, productos1);
     drone1.moverA({0,1});
+    drone1.moverA({1,1});
     drone1.mostrar(std::cout);
     std::ofstream file;
     file.open("drone.txt");

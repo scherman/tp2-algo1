@@ -462,19 +462,14 @@ void Sistema::cargar(std::istream & is)
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
-bool Sistema::operator==(const Sistema & otroSistema) const
+//AUXILIARES
+bool cuentaDron(const Drone d, const Secuencia<Drone> ds)
 {
-	bool mismoCampo = true;
-	if(!(campo() == otroSistema.campo())) return false;
-
-	bool mismosAviones = true;
-	if (!(mismosDrones(enjambreDrones(), otroSistema.enjambreDrones()))) return false;
-
-	bool mismosEstados = true;
-	for(int i = 0; i < parcelasCultivo(campo()).size(); ++i){
-		if(estadoDelCultivo(parcelasCultivo(campo())[i]) != estadoDelCultivo(parcelasCultivo(otroSistema.campo())[i])) return false;
+	bool count = 0;
+	for(int i = 0; i < ds.size(); ++i){
+		if (ds[i] == d) count;
 	}
-	return (mismoCampo && mismosAviones && mismosEstados);
+	return count;
 }
 
 //AUXILIARES
@@ -493,14 +488,20 @@ bool mismosDrones(const Secuencia<Drone> ps, const Secuencia<Drone> ds)
 	}
 	return mismos;
 }
-//AUXILIARES
-bool cuentaDron(const Drone d, const Secuencia<Drone> ds)
+
+bool Sistema::operator==(const Sistema & otroSistema) const
 {
-	bool count = 0;
-	for(int i = 0; i < ds.size(); ++i){
-		if (ds[i] == d) count;
+	bool mismoCampo = true;
+	if(!(campo() == otroSistema.campo())) return false;
+
+	bool mismosAviones = true;
+	if (!(mismosDrones(enjambreDrones(), otroSistema.enjambreDrones()))) return false;
+
+	bool mismosEstados = true;
+	for(int i = 0; i < parcelasCultivo(campo()).size(); ++i){
+		if(estadoDelCultivo(parcelasCultivo(campo())[i]) != estadoDelCultivo(parcelasCultivo(otroSistema.campo())[i])) return false;
 	}
-	return count;
+	return (mismoCampo && mismosAviones && mismosEstados);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
