@@ -144,13 +144,11 @@ void Drone::mostrar(std::ostream & os) const
 void Drone::guardar(std::ostream & os) const
 {
 	os << "{ D " << id() << " "<< bateria() << " " << "[";
-
 	if (vueloRealizado().size() > 0) os << vueloRealizado()[0];
 	for (int i = 1; i < vueloRealizado().size(); ++i) {
 		os << "," << vueloRealizado()[i];
 	}
 	os << "] [";
-
 	if (productosDisponibles().size() > 0) os << productosDisponibles()[0];
 	for (int j = 1; j < productosDisponibles().size(); ++j) {
 		os << "," << productosDisponibles()[j];
@@ -185,19 +183,13 @@ const Producto aProducto (const std::string &producto) {
 Secuencia<Producto> splitProductos(const std::string &productos){
 	// MEJORA: Si viene con espacios se rompe
 	std::string parseado = productos;
-		// std::cout << "parseado: " << parseado << std::endl;
 	int sep = parseado.find(',');
-		// std::cout << "sep?: " << (sep != std::string::npos) << std::endl;
 	Secuencia<Producto> resultado;
 	while (sep != std::string::npos) {
-		// std::cout << "aProducto: " << parseado.substr(0, sep) << std::endl;
 		Producto producto = aProducto(parseado.substr(0, sep));
 		resultado.push_back(producto);
 		parseado = parseado.substr(sep + 1, -1);
-		// std::cout << "------" << std::endl;
-		// std::cout << "parseado: " << parseado << std::endl;
 		sep = parseado.find(',');
-		// std::cout << "sep?: " << (sep != std::string::npos) << std::endl;
 	}
 	resultado.push_back(aProducto(parseado.substr(0,-1)));
 	return resultado;
@@ -209,9 +201,10 @@ void Drone::cargar(std::istream & is)
 		std::getline(is, contenido, ' ');
 		std::getline(is, contenido, ' ');
 		std::getline(is, id, ' ');
+		this->_id = std::stoi(id);
+
 		std::getline(is, bateria, ' ');
 		std::getline(is, contenido, '[');
-		this->_id = std::stoi(id);
 		this->_bateria = std::stoi(bateria);
 
 		while(contenido[0] != ']'){

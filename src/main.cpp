@@ -12,6 +12,7 @@ void compararDrones();
 void crearSistema();
 void crearYCargarCampo();
 void crearYCargarDrone();
+void crearYCargarSistema();
 void compararSistemas();
 
 int main()
@@ -21,8 +22,9 @@ int main()
     // crearCampo();
     // compararDrones();
     // crearYCargarCampo();
-    crearYCargarDrone();
+    // crearYCargarDrone();
     // compararDrones();
+    crearYCargarSistema();
     return 0;
 }
 
@@ -136,4 +138,33 @@ void crearYCargarDrone() {
     drone2.cargar(in);
     drone2.mostrar(std::cout);
     in.close();
+}
+
+void crearYCargarSistema() {
+    Campo campo;
+    Drone drone;
+    drone.moverA({0,1});
+    drone.moverA({1,1});
+    Drone otroDrone(15, {Fertilizante});
+    otroDrone.moverA({5,1});
+    Secuencia<Drone> drones = {drone, otroDrone};
+    Sistema sistema(campo, drones);
+    std::ofstream file;
+    file.open("sistema.txt");
+    sistema.guardar(file);
+    file.close();
+
+    Sistema sistema2;
+    std::ifstream in("sistema.txt");
+    sistema2.cargar(in);
+    in.close();
+
+    // file.open("result.txt");
+    // sistema.guardar(file);
+    // file << std::endl;
+    // file << std::endl;
+    // file << std::endl;
+    // sistema2.guardar(file);
+    // file.close();
+
 }

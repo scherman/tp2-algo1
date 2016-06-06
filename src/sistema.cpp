@@ -425,38 +425,71 @@ void Sistema::mostrar(std::ostream & os) const
 void Sistema::guardar(std::ostream & os) const
 {
 	os << "{ S ";
-	//puedo llamar directamente a guardar del CAMPO?? campo().guardar(os)...
 	campo().guardar(os);
-	//puedo llamar directamente a guardar del DRONE?? enjambreDrones()[i].guardar(os)...
-	os << " [";
-	for (int i = 0; i < enjambreDrones().size();++i)
-	{
-		if (i != enjambreDrones().size() - 1){
-			enjambreDrones()[i].guardar(os);
-			os << " , ";
-
-		}
-		else {
-			enjambreDrones()[i].guardar(os);
-			os << " ]";
-		}
+ 	os << " [";
+	if (enjambreDrones().size() > 0) enjambreDrones()[0].guardar(os);
+	for (int i = 1; i < enjambreDrones().size();++i){
+		os << ",";
+ 		enjambreDrones()[i].guardar(os);
 	}
-	//guardo lo de SISTEMA
-	os << " [";
-	for (int i = campo().dimensiones().largo -1; i >= 0; --i)
-	{
-		os << "[" << estadoDelCultivo({i,0});
-		for (int j = 1; j < campo().dimensiones().ancho -1; ++j)
-		{
-				os << ", " << estadoDelCultivo({i,j});
+	os << "] [";
+	for (int j = campo().dimensiones().largo - 1; j >= 0; j--) {
+		os << "[" << estadoDelCultivo({0,j});
+		for (int i = 1; i < campo().dimensiones().ancho; i++) {
+			os << "," << estadoDelCultivo({i,j});
 		}
-		os << "],";
+		os << "]" << ((j==0)? "" : ",") ;
 	}
-	os << " ]}";
+	os << "]}";
 }
 
 void Sistema::cargar(std::istream & is)
 {
+	std::string contenido, campo, drone;
+
+	std::getline(is, contenido, ' ');
+	std::getline(is, contenido, ' ');
+	std::getline(is, campo, '}');
+	campo.append("}");
+
+	std::getline(is, contenido, '[');
+	while ((contenido.size() > 1) && contenido[0] != ']') {
+			std::cout << contenido << std::endl;
+			std::getline(is, contenido, '{');
+			std::getline(is,contenido, '}');
+			drone = "{" + contenido + "}";
+			std::cout << drone << std::endl;
+	}
+
+			std::getline(is,contenido, '[');
+	std::cout << contenido << std::endl;
+
+
+	// 		std::getline(is, contenido, '[');
+	// std::cout << contenido << std::endl;
+	// while (std::getline(is, contenido, '[')) {
+	// 		std::getline(is, contenido, ']');
+	// 		std::cout << contenido << std::endl;
+	// }
+	// std::cout << contenido << std::endl;
+	// if (contenido[0] != ']'){
+	// 	std::getline(is, drone, '}');
+	// 	drone.append("}");
+	// 	std::getline(is,contenido, '{');
+	// }
+	// while(contenido[0] != ']') {
+	// 	std::getline(is,contenido, '}');
+	// 	drone = "{" + contenido + "}";
+	// 	std::cout << drone << std::endl;
+	// }
+	// std::getline(is,contenido);
+	// std::cout << contenido << std::endl;
+// std::getline(is, drone, '}');
+		// drone.append("}");
+		// std::getline(is,contenido);
+		// std::cout << drone << std::endl;
+	// }
+
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
