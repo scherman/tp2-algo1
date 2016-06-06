@@ -21,28 +21,6 @@ Drone::Drone(ID i, const std::vector<Producto>& ps)
 	this->_productos = ps;
 	this->_bateria = 100;
 	this->_enVuelo = false;
-	// this->_trayectoria = tr;
-
-	 /*srand(time(NULL));
-	 Posicion pos0;
-	 pos0.x = 0;
-	 pos0.y = 1;
-	 this->_trayectoria[0] = pos0;
-
-	 for (int i = 1; i < 5; i++) {
-	 	Posicion posicion;
-	 	switch (rand() % 2) {
-	 		case 0:
-	 			posicion.x = this->_trayectoria[i-1].x + 1;
-	 			posicion.y = this->_trayectoria[i-1].y;
-	 		break;
-	 		case 1:
-	 			posicion.y = this->_trayectoria[i-1].y + 1;
-	 			posicion.x = this->_trayectoria[i-1].x;
-	 		break;
-	 	}
-	 	this->_trayectoria[i] = posicion;
-	}*/
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -307,14 +285,14 @@ void Drone::setBateria(const Carga c)
 void Drone::borrarVueloRealizado()
 {//digo algo de enVuelo??
 	this->_enVuelo = false;
-	this->_trayectoria.clear();
+	this->_trayectoria = {};
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 void Drone::cambiarPosicionActual(const Posicion p)
-{//requiere que no este en vuelo. No se entiende la especificacion...
+{//requiere que no este en vuelo. En la especificacion dice que vueloRealizado no cambia...
 	this->_posicionActual = p;
 }
 
