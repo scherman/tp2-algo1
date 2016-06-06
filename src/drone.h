@@ -41,6 +41,8 @@ class Drone{
 
 };
 int cuentaDrones(const Producto p, const Secuencia<Producto> ps);
+bool noPertenece(Posicion p, Secuencia<Posicion> ps);
+Secuencia<Posicion> todasLasPosSinRepetir(const Secuencia<Drone> &ds);
 // Definirlo usando mostrar, para poder usar << con este tipo.
 std::ostream & operator<<(std::ostream & os,const Drone & d);
 
