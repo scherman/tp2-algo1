@@ -1,5 +1,6 @@
 #include "sistema.h"
 #include <algorithm>
+#include <sstream>
 
 Sistema::Sistema()
 {
@@ -407,19 +408,6 @@ void Sistema::volarYSensar(const Drone & d)
 void Sistema::mostrar(std::ostream & os) const
 {
 	this->_campo.mostrar(os);
-
-	// os << "Representacion estados del cultivo. Notacion: -(No es cultivo), NS(NoSensado)"
-	// for (int i = 0; i < this->_campo.dimensiones().ancho; i++) {
-	// 	for (int j = 0; j < this->_campo.dimensiones().largo; j++) {
-	// 		Posicion posicionActual;
-	// 		posicionActual.x = i;
-	// 		posicionActual.y = j;
-	// 		if (this->_campo.contenido(posicionActual) == Cultivo) {
-	// 			_estado.parcelas[i][j] = NoSensado;
-	// 		}
-	// 	}
-	// }
-
 }
 
 void Sistema::guardar(std::ostream & os) const
@@ -443,53 +431,62 @@ void Sistema::guardar(std::ostream & os) const
 	os << "]}";
 }
 
+//AUXILIARES
+const EstadoCultivo aEstadoCultivo (const std::string &text) {
+	if (text.find("RecienSembrado") != std::string::npos) return RecienSembrado;
+	if (text.find("EnCrecimiento") != std::string::npos) return EnCrecimiento;
+	if (text.find("ListoParaCosechar") != std::string::npos) return ListoParaCosechar;
+	if (text.find("ConMaleza") != std::string::npos) return ConMaleza;
+	if (text.find("ConPlaga") != std::string::npos) return ConPlaga;
+	if (text.find("NoSensado") != std::string::npos) return NoSensado;
+}
+
+std::vector<EstadoCultivo> splitEstados(const std::string &text, char sep) {
+  std::vector<EstadoCultivo> tokens;
+  std::size_t start = 0, end = 0;
+  while ((end = text.find(sep, start)) != std::string::npos) {
+		std::string value = text.substr(start, end - start);
+		tokens.push_back(aEstadoCultivo(value));
+    start = end + 1;
+  }
+  tokens.push_back(aEstadoCultivo(text.substr(start)));
+  return tokens;
+}
+
 void Sistema::cargar(std::istream & is)
 {
-	std::string contenido, campo, drone;
+	std::string contenido;
+	std::getline(is, contenido, ' ');
+	std::getline(is, contenido, ' ');
+	std::getline(is, contenido, '}');
+	Campo campo;
+	std::istringstream campoSerializadoStream(contenido);
+	campo.cargar(campoSerializadoStream);
+	this->_campo = campo;
 
-	std::getline(is, contenido, ' ');
-	std::getline(is, contenido, ' ');
-	std::getline(is, campo, '}');
-	campo.append("}");
+	Secuencia<Drone> drones;
+	auto pos = is.tellg();    // Leer posicion actual
+	while (std::getline(is,contenido,'{') && !is.eof()) {
+	    std::getline(is,contenido,'}');
+			Drone drone;
+			std::istringstream droneSerializadoStream(contenido);
+			drone.cargar(droneSerializadoStream);
+			drones.push_back(drone);
+	    pos = is.tellg();     // Actualizar posicoin antes de iterar de nuevo
+	}
+	is.seekg(pos); // Cambiar posicion actual
+	this->_enjambre = drones;
 
 	std::getline(is, contenido, '[');
-	while ((contenido.size() > 1) && contenido[0] != ']') {
-			std::cout << contenido << std::endl;
-			std::getline(is, contenido, '{');
-			std::getline(is,contenido, '}');
-			drone = "{" + contenido + "}";
-			std::cout << drone << std::endl;
+	for (int j = campo.dimensiones().largo - 1; j >= 0; j--) {
+		std::getline(is, contenido, '[');
+		std::string fila;
+		std::getline(is, fila, ']');
+		std::vector<EstadoCultivo> columnas = splitEstados(fila, ',');
+		for (int i = 0; i < campo.dimensiones().ancho; i++) {
+					this->_estado.parcelas[i][j] = columnas[i];
+		}
 	}
-
-			std::getline(is,contenido, '[');
-	std::cout << contenido << std::endl;
-
-
-	// 		std::getline(is, contenido, '[');
-	// std::cout << contenido << std::endl;
-	// while (std::getline(is, contenido, '[')) {
-	// 		std::getline(is, contenido, ']');
-	// 		std::cout << contenido << std::endl;
-	// }
-	// std::cout << contenido << std::endl;
-	// if (contenido[0] != ']'){
-	// 	std::getline(is, drone, '}');
-	// 	drone.append("}");
-	// 	std::getline(is,contenido, '{');
-	// }
-	// while(contenido[0] != ']') {
-	// 	std::getline(is,contenido, '}');
-	// 	drone = "{" + contenido + "}";
-	// 	std::cout << drone << std::endl;
-	// }
-	// std::getline(is,contenido);
-	// std::cout << contenido << std::endl;
-// std::getline(is, drone, '}');
-		// drone.append("}");
-		// std::getline(is,contenido);
-		// std::cout << drone << std::endl;
-	// }
-
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//

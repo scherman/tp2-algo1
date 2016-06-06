@@ -159,12 +159,12 @@ void crearYCargarSistema() {
     sistema2.cargar(in);
     in.close();
 
-    // file.open("result.txt");
-    // sistema.guardar(file);
-    // file << std::endl;
-    // file << std::endl;
-    // file << std::endl;
-    // sistema2.guardar(file);
-    // file.close();
+    file.open("result.txt");
+    sistema.guardar(file);
+    file << std::endl;
+    file << std::endl;
+    file << std::endl;
+    sistema2.guardar(file);
+    file.close();
 
 }
