@@ -5,6 +5,7 @@
 #include <algorithm>
 #include "aux.h"
 
+
 Drone::Drone()
 {
 	this->_id = rand() % 200;
@@ -115,10 +116,58 @@ bool Drone::vueloEscalerado() const
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 Secuencia<InfoVueloCruzado> Drone::vuelosCruzados(const Secuencia<Drone>& ds)
-{
-	return Secuencia<InfoVueloCruzado>();
+{//requiere que todos los drones tengan la misma longitud de vueloRealizado
+	if(ds.size()==0) return {};
+	//el if es por que si me dan una secuencia vacia se rompe al pedir abajo, ds[0]..-
+	Secuencia<InfoVueloCruzado> infoVuelos = {};
+	Posicion p = {};
+	Secuencia<Posicion> todasLasPos = todasLasPosSinRepetir(ds);
+	int cantDrones = 0;
+	int k = 0;
+	while(k < ds[0].vueloRealizado().size()){
+		for(int i = 0; i < todasLasPos.size(); i++){
+			//miro todasLasPos de los drones que me pasen y me voy fijando cuantos drones en el momento "k" estuvieron en esa posicion.
+			//Siempre habra al menos uno, si hay mas de uno, es un cruce.
+			for(int j = 0; j < ds.size(); ++j){
+				if(ds[j].vueloRealizado()[k] == todasLasPos[i]){
+					cantDrones++;
+				}
+			}
+			if(cantDrones > 1){
+				//InfoVueloCruzado es un struct definido en tipos.h
+				InfoVueloCruzado info;
+				info.posicion =  todasLasPos[i];
+				info.cantidadCruces = cantDrones;
+				infoVuelos.push_back(info);
+			}
+			cantDrones = 0;
+		}
+	}
+	return infoVuelos;
 }
 
+//AUXILIARES
+Secuencia<Posicion> todasLasPosSinRepetir(const Secuencia<Drone> &ds)
+{
+	Secuencia<Posicion> todas = {};
+	for(int i = 0; i < ds.size(); ++i){
+		for(int j = 0; j < ds[0].vueloRealizado().size(); ++j){
+			if(noPertenece(ds[i].vueloRealizado()[j], todas)){
+				Posicion pos = ds[i].vueloRealizado()[j];
+				todas.push_back(pos);
+			}
+		}
+	}
+	return todas;
+}
+//AUXILIARES
+bool noPertenece(Posicion p, Secuencia<Posicion> ps){
+	bool noPert = true;
+	for(int i = 0; i < ps.size(); ++i){
+		if(ps[i] == p) return false;
+	}
+	return noPert;
+}
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
