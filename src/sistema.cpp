@@ -154,27 +154,26 @@ bool vecinoConPlaga(const Sistema &s, const Posicion &p) //le pongo const a los 
 void Sistema::despegar(const Drone & d) //hay un requiere que dice que d debe pertenecer a Enjambre y que existe al menos una parcela libre.
 {
 	srand(time(NULL));
-	int x = rand() % (posiblePosicionLibre(*this).size());
-	Posicion p = posiblePosicionLibre(*this)[x];//estaria bueno que elija una posicion aleatoriamente...
+	int x = rand() % (posiblePosicionLibre(*this, posDelGranero(campo()))).size();
+	Posicion p = posiblePosicionLibre(*this, posDelGranero(campo()))[x];
 	for (unsigned int i = 0; i < enjambreDrones().size(); ++i){
 		if(enjambreDrones()[i] == d){
-			_enjambre[i].moverA(p);		//falta implementar moverA
+			_enjambre[i].moverA(p);
 	 	}
 	 }
 }
 //AUXILIARES
-Secuencia<Posicion> posiblePosicionLibre(const Sistema &s)
+Secuencia<Posicion> posiblePosicionLibre(const Sistema &s, const Posicion &pos)
 {
 	Secuencia<Posicion> ps;
-	Posicion pos;
-	Posicion p = posDelGranero(s.campo());
+	Posicion p;
 	for (unsigned int i = s.campo().dimensiones().largo; i >= 0; --i){
 		for (unsigned int j = 0; j < s.campo().dimensiones().ancho; ++j){
-			pos.y = j;
-			pos.x = i;
-			bool esVecino = (((pos.y -1 == p.y)||(pos.y == p.y)||(pos.y+1 == p.y)) &&((pos.x == p.x)||(pos.x+1 == p.x)||(pos.x-1 == p.x)));//se podria mejorar, implementado la funcion distancia!
-			if (esVecino && estaLibre(s, pos)){
-				ps.push_back(pos);
+			p.y = j;
+			p.x = i;
+			bool esVecino = (((p.y -1 == pos.y)||(p.y == pos.y)||(p.y+1 == pos.y)) &&((p.x == pos.x)||(p.x+1 == pos.x)||(p.x-1 == pos.x)));
+			if (esVecino && estaLibre(s, p)){
+				ps.push_back(p);
 			}
 		}
 	}
@@ -402,20 +401,123 @@ int parcelasFertilizables(const Sistema &s, const int &i, const int &viaje)
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 void Sistema::volarYSensar(const Drone & d)
+//requiere perteneceDrone(d, enjambreDrones(this)) ;
+//requiere bateria(d) > 0 ;
+//requiere hayParcelaLibre
 {
+	int sub;
+	srand(time(NULL));
+	int x = rand() % (posiblePosicionLibre(*this, d.posicionActual()).size());
+	Posicion p = posiblePosicionLibre(*this, d.posicionActual())[x];
+	for (unsigned int i = 0; i < enjambreDrones().size(); ++i){
+		if(enjambreDrones()[i] == d){
+			sub = i;
+			_enjambre[i].moverA(p);
+			Carga c = enjambreDrones()[i].bateria() - 1;
+			_enjambre[i].setBateria(c);
+			break;
+		}
+	}
+	Posicion pos = enjambreDrones()[sub].posicionActual();
+//miro si no estaSensado
+	if(estadoDelCultivo(pos) == NoSensado){
+		this->_estado.parcelas[pos.x][pos.y] = estaSensado(*this, pos);
+	}
+
+
+//veo que pasa si estadoDelCultivo es ConMaleza.....
+	Secuencia<Producto> herbicidas = {Herbicida, HerbicidaLargoAlcance};
+	//aca deberia preguntar que pasa si es HerbicidaLargoAlcance, deberia modificar las parcelas adyacentes que tambien tengan maleza....
+	if((estadoDelCultivo(pos) == ConMaleza) && (enjambreDrones()[sub].bateria() >= 5)){
+		//veo para cada caso que Herbicida tengo disponible.
+		if((perteneceA(Herbicida, enjambreDrones()[sub].productosDisponibles())) && (perteneceA(HerbicidaLargoAlcance, enjambreDrones()[sub].productosDisponibles()))){
+			int l = rand() % 2;
+			Carga d = enjambreDrones()[sub].bateria() - 5;
+			_enjambre[sub].setBateria(d);
+			this->_estado.parcelas[pos.x][pos.y] = RecienSembrado;
+			if(l==0){
+				this->_enjambre[sub].sacarProducto(herbicidas[0]);
+			}
+			else{//aca deberia preguntar que pasa si es HerbicidaLargoAlcance, deberia modificar las parcelas adyacentes que tambien tengan maleza....
+				this->_enjambre[sub].sacarProducto(herbicidas[1]);
+			}
+		}
+
+		if(perteneceA(Herbicida, enjambreDrones()[sub].productosDisponibles()) && (!perteneceA(HerbicidaLargoAlcance, enjambreDrones()[sub].productosDisponibles()))){
+			Carga d = enjambreDrones()[sub].bateria() - 5;
+			_enjambre[sub].setBateria(d);
+			this->_estado.parcelas[pos.x][pos.y] = RecienSembrado;
+			this->_enjambre[sub].sacarProducto(herbicidas[0]);
+		}
+		if(perteneceA(HerbicidaLargoAlcance, enjambreDrones()[sub].productosDisponibles()) && (!perteneceA(Herbicida, enjambreDrones()[sub].productosDisponibles()))){
+			Carga d = enjambreDrones()[sub].bateria() - 5;
+			_enjambre[sub].setBateria(d);
+			this->_estado.parcelas[pos.x][pos.y] = RecienSembrado;
+			this->_enjambre[sub].sacarProducto(herbicidas[1]);
+		}
+	}
+
+//veo que pasa si estadoDelCultivo es ConPlaga...
+	Secuencia<Producto> plaguicidas = {Plaguicida, PlaguicidaBajoConsumo};
+	if((estadoDelCultivo(pos) == ConPlaga) && (enjambreDrones()[sub].bateria() >= 5)){
+		if((perteneceA(Plaguicida, enjambreDrones()[sub].productosDisponibles())) && (perteneceA(PlaguicidaBajoConsumo, enjambreDrones()[sub].productosDisponibles()))){
+			if(enjambreDrones()[sub].bateria() >= 10){
+				int k = rand() % 2;
+				if(k == 0){
+					Carga cr = enjambreDrones()[sub].bateria() - 10;
+					_enjambre[sub].setBateria(cr);
+					this->_estado.parcelas[pos.x][pos.y] = RecienSembrado;
+					this->_enjambre[sub].sacarProducto(plaguicidas[0]);
+				}
+				else{
+					Carga carga = enjambreDrones()[sub].bateria() - 5;
+					_enjambre[sub].setBateria(carga);
+					this->_estado.parcelas[pos.x][pos.y] = RecienSembrado;
+					this->_enjambre[sub].sacarProducto(plaguicidas[1]);
+				}
+			}
+			else{
+				Carga carga = enjambreDrones()[sub].bateria() - 5;
+				_enjambre[sub].setBateria(carga);
+				this->_estado.parcelas[pos.x][pos.y] = RecienSembrado;
+				this->_enjambre[sub].sacarProducto(plaguicidas[1]);
+			}
+		}
+		if((perteneceA(Plaguicida, enjambreDrones()[sub].productosDisponibles())) && (enjambreDrones()[sub].bateria() >= 10) && (!perteneceA(PlaguicidaBajoConsumo, enjambreDrones()[sub].productosDisponibles()))){
+			Carga cr = enjambreDrones()[sub].bateria() - 10;
+			_enjambre[sub].setBateria(cr);
+			this->_estado.parcelas[pos.x][pos.y] = RecienSembrado;
+			this->_enjambre[sub].sacarProducto(plaguicidas[0]);
+		}
+		if((!perteneceA(Plaguicida, enjambreDrones()[sub].productosDisponibles())) && (perteneceA(PlaguicidaBajoConsumo, enjambreDrones()[sub].productosDisponibles()))){
+			Carga carga = enjambreDrones()[sub].bateria() - 5;
+			_enjambre[sub].setBateria(carga);
+			this->_estado.parcelas[pos.x][pos.y] = RecienSembrado;
+			this->_enjambre[sub].sacarProducto(plaguicidas[1]);
+		}
+	}
 }
 
 //AUXILIARES
-const std::string estadoAbreviado (const EstadoCultivo &estado) {
-	switch (estado) {
-		case RecienSembrado: return "RS";
-		case EnCrecimiento: return "EC";
-		case ListoParaCosechar: return "LC";
-		case ConMaleza: return "CM";
-		case ConPlaga: return "CP";
-		case NoSensado: return "NS";
-	}
+EstadoCultivo estaSensado(const Sistema &s, const Posicion &p)
+{
+	Secuencia<EstadoCultivo> estados = {RecienSembrado, EnCrecimiento, ListoParaCosechar, ConMaleza, ConPlaga};
+	srand(time(NULL));
+	int x = rand() % (estados.size());
+	return estados[x];
 }
+//AUXILIARES
+bool perteneceA(const Producto &p, const Secuencia<Producto> &ds)
+{
+	bool pert = false;
+	for(unsigned int i = 0; i < ds.size(); i++){
+		if(ds[i] == p) return true;
+	}
+	return pert;
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 void Sistema::mostrar(std::ostream & os) const
 {
@@ -450,6 +552,21 @@ void Sistema::mostrar(std::ostream & os) const
 	}
 }
 
+//AUXILIARES
+const std::string estadoAbreviado (const EstadoCultivo &estado) {
+	switch (estado) {
+		case RecienSembrado: return "RS";
+		case EnCrecimiento: return "EC";
+		case ListoParaCosechar: return "LC";
+		case ConMaleza: return "CM";
+		case ConPlaga: return "CP";
+		case NoSensado: return "NS";
+	}
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 void Sistema::guardar(std::ostream & os) const
 {
 	os << "{ S ";
@@ -471,27 +588,8 @@ void Sistema::guardar(std::ostream & os) const
 	os << "]}";
 }
 
-//AUXILIARES
-const EstadoCultivo aEstadoCultivo (const std::string &text) {
-	if (text.find("RecienSembrado") != std::string::npos) return RecienSembrado;
-	if (text.find("EnCrecimiento") != std::string::npos) return EnCrecimiento;
-	if (text.find("ListoParaCosechar") != std::string::npos) return ListoParaCosechar;
-	if (text.find("ConMaleza") != std::string::npos) return ConMaleza;
-	if (text.find("ConPlaga") != std::string::npos) return ConPlaga;
-	if (text.find("NoSensado") != std::string::npos) return NoSensado;
-}
-
-std::vector<EstadoCultivo> splitEstados(const std::string &text, char sep) {
-  std::vector<EstadoCultivo> tokens;
-  std::size_t start = 0, end = 0;
-  while ((end = text.find(sep, start)) != std::string::npos) {
-		std::string value = text.substr(start, end - start);
-		tokens.push_back(aEstadoCultivo(value));
-    start = end + 1;
-  }
-  tokens.push_back(aEstadoCultivo(text.substr(start)));
-  return tokens;
-}
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 void Sistema::cargar(std::istream & is)
 {
@@ -529,8 +627,45 @@ void Sistema::cargar(std::istream & is)
 	}
 }
 
+//AUXILIARES
+std::vector<EstadoCultivo> splitEstados(const std::string &text, char sep) {
+  std::vector<EstadoCultivo> tokens;
+  std::size_t start = 0, end = 0;
+  while ((end = text.find(sep, start)) != std::string::npos) {
+		std::string value = text.substr(start, end - start);
+		tokens.push_back(aEstadoCultivo(value));
+    start = end + 1;
+  }
+  tokens.push_back(aEstadoCultivo(text.substr(start)));
+  return tokens;
+}
+//AUXILIARES
+const EstadoCultivo aEstadoCultivo (const std::string &text) {
+	if (text.find("RecienSembrado") != std::string::npos) return RecienSembrado;
+	if (text.find("EnCrecimiento") != std::string::npos) return EnCrecimiento;
+	if (text.find("ListoParaCosechar") != std::string::npos) return ListoParaCosechar;
+	if (text.find("ConMaleza") != std::string::npos) return ConMaleza;
+	if (text.find("ConPlaga") != std::string::npos) return ConPlaga;
+	if (text.find("NoSensado") != std::string::npos) return NoSensado;
+}
+
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
+bool Sistema::operator==(const Sistema & otroSistema) const
+{
+	bool mismoCampo = true;
+	if(!(campo() == otroSistema.campo())) return false;
+
+	bool mismosAviones = true;
+	if (!(mismosDrones(enjambreDrones(), otroSistema.enjambreDrones()))) return false;
+
+	bool mismosEstados = true;
+	for(int i = 0; i < parcelasCultivo(campo()).size(); ++i){
+		if(estadoDelCultivo(parcelasCultivo(campo())[i]) != estadoDelCultivo(parcelasCultivo(otroSistema.campo())[i])) return false;
+	}
+	return (mismoCampo && mismosAviones && mismosEstados);
+}
 
 //AUXILIARES
 bool cuentaDron(const Drone d, const Secuencia<Drone> ds)
@@ -559,26 +694,11 @@ bool mismosDrones(const Secuencia<Drone> ps, const Secuencia<Drone> ds)
 	return mismos;
 }
 
-bool Sistema::operator==(const Sistema & otroSistema) const
-{
-	bool mismoCampo = true;
-	if(!(campo() == otroSistema.campo())) return false;
-
-	bool mismosAviones = true;
-	if (!(mismosDrones(enjambreDrones(), otroSistema.enjambreDrones()))) return false;
-
-	bool mismosEstados = true;
-	for(int i = 0; i < parcelasCultivo(campo()).size(); ++i){
-		if(estadoDelCultivo(parcelasCultivo(campo())[i]) != estadoDelCultivo(parcelasCultivo(otroSistema.campo())[i])) return false;
-	}
-	return (mismoCampo && mismosAviones && mismosEstados);
-}
-
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 std::ostream & operator<<(std::ostream & os, const Sistema & s)
 {
-	// TODO: insert return statement here
+	s.mostrar(os);
 	return os;
 }

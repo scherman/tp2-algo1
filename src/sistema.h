@@ -62,7 +62,7 @@ private:
 
 };
 bool vecinoConPlaga(const Sistema &s, const Posicion &p);
-Secuencia<Posicion> posiblePosicionLibre(const Sistema &s);
+Secuencia<Posicion> posiblePosicionLibre(const Sistema &s, const Posicion &pos);
 Posicion posDelGranero(const Campo &c);
 bool estaLibre(const Sistema &s, const Posicion &p);
 Secuencia<Posicion> parcelasCultivo(const Campo &c);
@@ -70,6 +70,13 @@ int cantCultivosCosechables(const Sistema &s);
 int recorridoMaximo(const Sistema &s, const Drone &d);
 int cantFertilizantes(const Drone &d);
 int parcelasFertilizables(const Sistema &s, const int &i, const int &viaje);
+bool perteneceA(const Producto &p, const Secuencia<Producto> &ds);
+EstadoCultivo estaSensado(const Sistema &s, const Posicion &p);
+const std::string estadoAbreviado (const EstadoCultivo &estado);
+std::vector<EstadoCultivo> splitEstados(const std::string &text, char sep);
+const EstadoCultivo aEstadoCultivo (const std::string &text);
+bool mismosDrones(const Secuencia<Drone> ps, const Secuencia<Drone> ds);
+bool cuentaDron(const Drone d, const Secuencia<Drone> ds);
 // Definirlo usando mostrar, para poder usar << con este tipo.
 std::ostream &operator<<(std::ostream &os, const Sistema &s);
 
