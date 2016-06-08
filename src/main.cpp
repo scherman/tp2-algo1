@@ -149,6 +149,7 @@ void crearYCargarSistema() {
     otroDrone.moverA({5,1});
     Secuencia<Drone> drones = {drone, otroDrone};
     Sistema sistema(campo, drones);
+    sistema.mostrar(std::cout);
     std::ofstream file;
     file.open("sistema.txt");
     sistema.guardar(file);

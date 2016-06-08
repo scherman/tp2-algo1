@@ -405,9 +405,49 @@ void Sistema::volarYSensar(const Drone & d)
 {
 }
 
+//AUXILIARES
+const std::string estadoAbreviado (const EstadoCultivo &estado) {
+	switch (estado) {
+		case RecienSembrado: return "RS";
+		case EnCrecimiento: return "EC";
+		case ListoParaCosechar: return "LC";
+		case ConMaleza: return "CM";
+		case ConPlaga: return "CP";
+		case NoSensado: return "NS";
+	}
+}
+
 void Sistema::mostrar(std::ostream & os) const
 {
-	this->_campo.mostrar(os);
+	os << "Representacion de sistema con campo de " << campo().dimensiones().ancho << "x" << campo().dimensiones().largo << ". Notacion: [Parcela/EstadoCultivo]/|drones| \n";
+	os << "Parcelas: C(Casa), G(Granero), [estado](si es cultivo) \n";
+	os << "Estados: EC(EnCrecimiento), LC(ListoParaCosechar), CM(ConMaleza), CP(ConPlaga), NS(NoSensado) \n";
+
+	for (int j = campo().dimensiones().largo - 1; j >= 0; j--) {
+		for (int i = 0; i < campo().dimensiones().ancho ; i++) {
+			int cantDrones = 0;
+			Posicion posActual = {i,j};
+			for (int d = 0; d < enjambreDrones().size(); d++) {
+				if (enjambreDrones()[d].posicionActual() == posActual) cantDrones++;
+			}
+			if (campo().contenido({i,j}) == Cultivo) {
+				 os << estadoAbreviado(estadoDelCultivo({i,j}));
+				if (cantDrones > 0) {
+					os << "/" << cantDrones << "  ";
+				}  else {
+					os << "    ";
+				}
+			} else {
+				os << nombreAbreviado(campo().contenido({i,j}));
+				if (cantDrones > 0) {
+					os << "/" << cantDrones << "  ";
+				}  else {
+					os << "     ";
+				}
+			}
+		}
+		os << "\n";
+	}
 }
 
 void Sistema::guardar(std::ostream & os) const
