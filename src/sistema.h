@@ -77,6 +77,8 @@ std::vector<EstadoCultivo> splitEstados(const std::string &text, char sep);
 const EstadoCultivo aEstadoCultivo (const std::string &text);
 bool mismosDrones(const Secuencia<Drone> ps, const Secuencia<Drone> ds);
 bool cuentaDron(const Drone d, const Secuencia<Drone> ds);
+int distancia(const Posicion &p, const Posicion &pos);
+int valAbs(const int &x);
 // Definirlo usando mostrar, para poder usar << con este tipo.
 std::ostream &operator<<(std::ostream &os, const Sistema &s);
 
