@@ -190,6 +190,7 @@ Secuencia<Posicion> posiblePosicionLibre(const Sistema &s, const Posicion &pos)
 bool estaLibre(const Sistema &s, const Posicion &p) //se fija si una posicion 'p' esta libre de drones.
 {
 	bool libre = true;
+	if(s.campo().contenido(p) == Casa) return false;
 	for (int i = 0; i < s.enjambreDrones().size(); ++i){
 		Posicion pos = s.enjambreDrones()[i].posicionActual();
 		if (pos == p){
@@ -250,7 +251,7 @@ int cantCultivosCosechables(const Sistema &s)
 	unsigned int i = 0;
 	while (i < parcelasCultivo(s.campo()).size()){
 		Posicion p = parcelasCultivo(s.campo())[i];
-		if (s.estadoDelCultivo(p) == ListoParaCosechar){ 
+		if (s.estadoDelCultivo(p) == ListoParaCosechar){
 			res++;
 			}
 		i++;
