@@ -228,25 +228,29 @@ Secuencia<Producto> splitProductos(const std::string &productos){
 
 void Drone::cargar(std::istream & is)
 {
-		std::string contenido, id, bateria, productos, enVuelo, posicionActual;
+		std::string contenido, id, bateria, aux, productos, enVuelo, posicionActual;
 		std::getline(is, contenido, ' ');
 		std::getline(is, contenido, ' ');
 		std::getline(is, id, ' ');
 		this->_id = std::stoi(id);
 
 		std::getline(is, bateria, ' ');
-		std::getline(is, contenido, '[');
 		this->_bateria = std::stoi(bateria);
 
-		while(contenido[0] != ']'){
-			std::string posicion;
-			std::getline(is, posicion, ']');
-			this->_trayectoria.push_back(splitPosicion(posicion));
-			std::getline(is, contenido, '[');
+		std::getline(is, contenido, '[');
+		std::getline(is, aux, ']');
+		if (aux.size() == 0)  {
+			std::getline(is, aux, '[');
+			std::getline(is, aux, ']');
+		} else {
+			while(aux.size() > 0 && contenido[0] != ']'){
+				this->_trayectoria.push_back(splitPosicion(aux));
+				std::getline(is, contenido, '[');
+				std::getline(is, aux, ']');
+			}
 		}
 
-		std::getline(is, productos, ']');
-		this->_productos = splitProductos(productos);
+		this->_productos = splitProductos(aux);
 
 		std::getline(is, enVuelo, '[');
 		this->_enVuelo = enVuelo.find("true") != std::string::npos ? true : false;
