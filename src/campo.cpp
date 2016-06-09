@@ -138,9 +138,10 @@ void Campo::cargar(std::istream & is)
 	std::getline(is, contenido, '[');
 	std::getline(is, ancho, ',');
 	std::getline(is, largo, ']');
+	Dimension dimension = {std::stoi(ancho), std::stoi(largo)};
+	this->_dimension = dimension;
 
 	// Parseo parcelas
-	Dimension dimension = {std::stoi(ancho), std::stoi(largo)};
 	Grilla<Parcela> grilla(dimension);
 	std::getline(is, contenido, '[');
 	for (int j = this->_dimension.largo - 1; j >= 0; j--) {
@@ -149,13 +150,12 @@ void Campo::cargar(std::istream & is)
 		std::getline(is, fila, ']');
 		std::vector<Parcela> columnas = split(fila, ',');
 		for (int i = 0; i < this->_dimension.ancho; i++) {
-					grilla.parcelas[i][j] = columnas[i];
+				grilla.parcelas[i][j] = columnas[i];
 		}
 	}
 
 	// Modifico campo con lo cargado
 	this->_grilla = grilla;
-	this->_dimension = dimension;
 }
 
 //AUXILIARES

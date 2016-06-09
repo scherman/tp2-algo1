@@ -19,9 +19,9 @@ int main()
 {
     // crearSistema();
     // crearDrone();
-    crearCampo();
+    // crearCampo();
     // compararDrones();
-    // crearYCargarCampo();
+    crearYCargarCampo();
     // crearYCargarDrone();
     // compararDrones();
     // crearYCargarSistema();
@@ -109,7 +109,7 @@ void compararSistemas(){
 }
 
 void crearYCargarCampo() {
-    Campo campo;
+    Campo campo ({5, 15}, {10, 20});
     campo.mostrar(std::cout);
     std::ofstream file;
     file.open("campo.txt");
@@ -121,7 +121,6 @@ void crearYCargarCampo() {
     campo2.cargar(in);
     campo2.mostrar(std::cout);
     in.close();
-
     std::cout << "Iguales: " << (campo == campo2) << std::endl;
 }
 
