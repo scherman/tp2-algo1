@@ -3,7 +3,7 @@
 #include <iostream>
 #include "campo.h"
 #include <algorithm>
-#include "aux.h"
+#include "auxiliares.h"
 
 
 Drone::Drone()
@@ -12,6 +12,8 @@ Drone::Drone()
 	this->_productos = {Fertilizante, Fertilizante, PlaguicidaBajoConsumo};
 	this->_bateria = 100;
 	this->_enVuelo = false;
+	_trayectoria = Secuencia<Posicion>();
+	_posicionActual = {0,0};
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -21,6 +23,8 @@ Drone::Drone(ID i, const std::vector<Producto>& ps)
 	this->_productos = ps;
 	this->_bateria = 100;
 	this->_enVuelo = false;
+	_trayectoria = Secuencia<Posicion>();
+	_posicionActual = {0,0};
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -308,7 +312,14 @@ bool Drone::operator==(const Drone & otroDrone) const
 {
 	bool mismosProductos = false;
 	bool igualRecorrido = false;
-	if((id() == otroDrone.id()) && (bateria() == otroDrone.bateria()) && (enVuelo() == otroDrone.enVuelo()) && (productosDisponibles().size() == otroDrone.productosDisponibles().size())){
+	if((id() == otroDrone.id()) && (bateria() == otroDrone.bateria()) && (enVuelo() == otroDrone.enVuelo()) && (productosDisponibles().size() == otroDrone.productosDisponibles().size()) && _trayectoria == otroDrone._trayectoria && _posicionActual == otroDrone._posicionActual){
+		Secuencia<Producto> productos1(_productos);
+		Secuencia<Producto> productos2(_productos);
+		std::sort(productos1.begin(), productos1.end());
+		std::sort(productos2.begin(), productos2.end());
+		return productos1 == productos2;
+		
+		/*
 		//miro que tenga los MISMOS productos.
 		for (int j = 0; j < productosDisponibles().size(); ++j){
 			if((mismosProductos = false) && (j>0)) break;
@@ -322,6 +333,7 @@ bool Drone::operator==(const Drone & otroDrone) const
 				}
 			}
 		}
+		
 		//miro que tenga exactamente el mismo recorrido
 		for (int j = 0; j < vueloRealizado().size(); ++j){
 			if ((j > 0) && (igualRecorrido == false)) break;
@@ -332,6 +344,7 @@ bool Drone::operator==(const Drone & otroDrone) const
 				}
 			}
 		}
+		* */
 		return (mismosProductos && igualRecorrido);
 	}
 }

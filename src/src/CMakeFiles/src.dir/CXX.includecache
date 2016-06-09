@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/jscherman/Descargas/tp2-algo1-master/src/auxiliares.h
+tipos.h
+/home/jscherman/Descargas/tp2-algo1-master/src/tipos.h
+
+/home/jscherman/Descargas/tp2-algo1-master/src/campo.h
+tipos.h
+/home/jscherman/Descargas/tp2-algo1-master/src/tipos.h
+
+/home/jscherman/Descargas/tp2-algo1-master/src/drone.cpp
+drone.h
+/home/jscherman/Descargas/tp2-algo1-master/src/drone.h
+cstdlib
+-
+iostream
+-
+campo.h
+/home/jscherman/Descargas/tp2-algo1-master/src/campo.h
+algorithm
+-
+auxiliares.h
+/home/jscherman/Descargas/tp2-algo1-master/src/auxiliares.h
+
+/home/jscherman/Descargas/tp2-algo1-master/src/drone.h
+tipos.h
+/home/jscherman/Descargas/tp2-algo1-master/src/tipos.h
+vector
+-
+
+/home/jscherman/Descargas/tp2-algo1-master/src/tipos.h
+iostream
+-
+vector
+-
+
