@@ -12,8 +12,8 @@ Drone::Drone()
 	this->_productos = {Fertilizante, Fertilizante, PlaguicidaBajoConsumo};
 	this->_bateria = 100;
 	this->_enVuelo = false;
-	_trayectoria = Secuencia<Posicion>();
-	_posicionActual = {0,0};
+	this->_trayectoria = Secuencia<Posicion>();
+	this->_posicionActual = {0,0};
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -23,8 +23,8 @@ Drone::Drone(ID i, const std::vector<Producto>& ps)
 	this->_productos = ps;
 	this->_bateria = 100;
 	this->_enVuelo = false;
-	_trayectoria = Secuencia<Posicion>();
-	_posicionActual = {0,0};
+	this->_trayectoria = Secuencia<Posicion>();
+	this->_posicionActual = {0,0};
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -64,7 +64,7 @@ const Secuencia<Posicion>& Drone::vueloRealizado() const
 
 Posicion Drone::posicionActual() const
 {
-	return this->_trayectoria.back();
+	return this->_posicionActual;
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -260,7 +260,7 @@ void Drone::cargar(std::istream & is)
 
 void Drone::moverA(const Posicion pos)
 {
-	//o uso _cambiarPosicionActual????
+	this->cambiarPosicionActual(pos);
 	this->_enVuelo = true;
 	this->_trayectoria.push_back(pos);
 }
@@ -308,46 +308,36 @@ void Drone::sacarProducto(const Producto p)
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
+//AUXILIARES
+int cantidadProducto (const Secuencia<Producto> & productos, const Producto & producto) {
+	int cont = 0;
+  for (int i = 0; i < productos.size(); i++) {
+  	if (productos[i] == producto) cont++;
+  }
+	return cont;
+}
+
+//AUXILIARES
+bool mismosProductos(const Secuencia<Producto> & productos1, const Secuencia<Producto> & productos2) {
+	if (productos1.size() != productos2.size()) return false;
+	for (int i = 0; i < productos1.size(); i++) {
+		Producto producto = productos1[i];
+		if (cantidadProducto(productos1, producto) != cantidadProducto(productos2, producto)) return false;
+	}
+	return true;
+}
+
 bool Drone::operator==(const Drone & otroDrone) const
 {
-	bool mismosProductos = false;
-	bool igualRecorrido = false;
-	if((id() == otroDrone.id()) && (bateria() == otroDrone.bateria()) && (enVuelo() == otroDrone.enVuelo()) && (productosDisponibles().size() == otroDrone.productosDisponibles().size()) && _trayectoria == otroDrone._trayectoria && _posicionActual == otroDrone._posicionActual){
-		Secuencia<Producto> productos1(_productos);
-		Secuencia<Producto> productos2(_productos);
-		std::sort(productos1.begin(), productos1.end());
-		std::sort(productos2.begin(), productos2.end());
-		return productos1 == productos2;
-		
-		/*
-		//miro que tenga los MISMOS productos.
-		for (int j = 0; j < productosDisponibles().size(); ++j){
-			if((mismosProductos = false) && (j>0)) break;
-			for (int i = 0; i < otroDrone.productosDisponibles().size(); ++i){
-				if ((productosDisponibles()[j] == otroDrone.productosDisponibles()[i]) && (cuentaDrones(productosDisponibles()[j], productosDisponibles()) == cuentaDrones(otroDrone.productosDisponibles()[i], otroDrone.productosDisponibles()))){
-					mismosProductos = true;
-					break;
-				}
-				else {
-					mismosProductos = false;
-				}
-			}
-		}
-		
-		//miro que tenga exactamente el mismo recorrido
-		for (int j = 0; j < vueloRealizado().size(); ++j){
-			if ((j > 0) && (igualRecorrido == false)) break;
-			for (int i = 0; i < otroDrone.vueloRealizado().size(); ++i){
-				if ((vueloRealizado()[j].x == otroDrone.vueloRealizado()[i].x) && (vueloRealizado()[j].y == otroDrone.vueloRealizado()[i].y)){
-					igualRecorrido = true;
-					break;
-				}
-			}
-		}
-		* */
-		return (mismosProductos && igualRecorrido);
-	}
+	if (id() != otroDrone.id()) return false;
+	if (bateria() != otroDrone.bateria()) return false;
+	if (enVuelo() != otroDrone.enVuelo()) return false;
+  if (vueloRealizado() != otroDrone.vueloRealizado()) return false;
+	if (!mismosProductos(productosDisponibles(), otroDrone.productosDisponibles())) return false;
+	if (!(posicionActual() == otroDrone.posicionActual())) return false;
+	return true;
 }
+
 //AUXILIARES
 int cuentaDrones(const Producto p, const Secuencia<Producto> ps)
 {

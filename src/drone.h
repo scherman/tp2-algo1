@@ -2,6 +2,7 @@
 #define DRONE_H_INCLUDED
 
 #include "tipos.h"
+#include "auxiliares.h"
 #include <vector>
 
 class Drone{

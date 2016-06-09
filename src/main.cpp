@@ -21,9 +21,9 @@ int main()
     // crearDrone();
     // crearCampo();
     // compararDrones();
-    crearYCargarCampo();
+    // crearYCargarCampo();``
     // crearYCargarDrone();
-    // compararDrones();
+    compararDrones();
     // crearYCargarSistema();
     return 0;
 }
