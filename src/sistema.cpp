@@ -79,21 +79,18 @@ const Secuencia<Drone>& Sistema::enjambreDrones() const
 
 void Sistema::crecer()
 {
-	Posicion p;
 	EstadoCultivo c = RecienSembrado;
 	EstadoCultivo a = EnCrecimiento;
 	EstadoCultivo b = ListoParaCosechar;
 	for (int i = campo().dimensiones().largo; i >= 0; --i){
 		for (int j = 0; j < campo().dimensiones().ancho; ++j){
-			p.y = j;
-			p.x = i;
-			if (campo().contenido(p) == Cultivo){
-				if (estadoDelCultivo(p) == c){
-					this->_estado.parcelas[p.x][p.y] = a;
+			if (campo().contenido({j,i}) == Cultivo){
+				if (estadoDelCultivo({j,i}) == c){
+					this->_estado.parcelas[j][i] = a;
 				}
 				else{
-					if (estadoDelCultivo(p) == a){
-					this->_estado.parcelas[p.x][p.y] = b;
+					if (estadoDelCultivo({j,i}) == a){
+					this->_estado.parcelas[j][i] = b;
 					}
 				}
 			}
@@ -114,32 +111,31 @@ void Sistema::seVinoLaMaleza(const Secuencia<Posicion>& ps)
 	}
 }
 
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 void Sistema::seExpandePlaga()
 {
-	Posicion p;
+	Sistema s = *this;
 	EstadoCultivo a = ConPlaga;
 	for (int i = campo().dimensiones().largo; i >= 0; --i){
 		for (int j = 0; j < campo().dimensiones().ancho; ++j){
-			p.y = j;
-			p.x = i;
-			if (vecinoConPlaga(*this,p)){
-				this->_estado.parcelas[p.x][p.y] = a;
+			if (vecinoConPlaga(s,{j,i})){
+				this->_estado.parcelas[j][i] = a;
 			}
 		}
 	}
 }
 //AUXILIARES
-bool vecinoConPlaga(const Sistema &s, const Posicion &p) //le pongo const a los parametros o no??
+bool vecinoConPlaga(const Sistema &s, const Posicion &p)
 {
 	bool tieneUnVecinoConPlaga = false;
 	EstadoCultivo a = ConPlaga;
-	Posicion pos;
+	//Posicion pos;
 	for (int i = s.campo().dimensiones().largo; i >= 0; --i){
 		for (int j = 0; j < s.campo().dimensiones().ancho; ++j){
-			pos.y = j;
-			pos.x = i;
-			bool esVecino = (((pos.y -1 == p.y)||(pos.y == p.y)||(pos.y+1 == p.y)) &&((pos.x == p.x)||(pos.x+1 == p.x)||(pos.x-1 == p.x)));//se podria mejorar, implementado la funcion distancia!
-			if (esVecino && s.estadoDelCultivo(pos) == a){
+			bool esVecino = (distancia({j,i},p) == 1);
+			if (esVecino && s.estadoDelCultivo({j,i}) == a){
 				tieneUnVecinoConPlaga = true;
 				break;
 			}
@@ -147,7 +143,20 @@ bool vecinoConPlaga(const Sistema &s, const Posicion &p) //le pongo const a los 
 	}
 	return tieneUnVecinoConPlaga;
 }
-
+int distancia(const Posicion &p, const Posicion &pos)
+{
+	int dist = valAbs(p.x - pos.x) + valAbs(p.y - pos.y);
+	return dist;
+}
+int valAbs(const int &x)
+{
+	if(x < 0){
+		return -1*x;
+	}
+	else{
+		return x;
+	}
+}
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
@@ -156,7 +165,7 @@ void Sistema::despegar(const Drone & d) //hay un requiere que dice que d debe pe
 	srand(time(NULL));
 	int x = rand() % (posiblePosicionLibre(*this, posDelGranero(campo()))).size();
 	Posicion p = posiblePosicionLibre(*this, posDelGranero(campo()))[x];
-	for (unsigned int i = 0; i < enjambreDrones().size(); ++i){
+	for (int i = 0; i < enjambreDrones().size(); ++i){
 		if(enjambreDrones()[i] == d){
 			_enjambre[i].moverA(p);
 	 	}
@@ -166,14 +175,12 @@ void Sistema::despegar(const Drone & d) //hay un requiere que dice que d debe pe
 Secuencia<Posicion> posiblePosicionLibre(const Sistema &s, const Posicion &pos)
 {
 	Secuencia<Posicion> ps;
-	Posicion p;
-	for (unsigned int i = s.campo().dimensiones().largo; i >= 0; --i){
-		for (unsigned int j = 0; j < s.campo().dimensiones().ancho; ++j){
-			p.y = j;
-			p.x = i;
-			bool esVecino = (((p.y -1 == pos.y)||(p.y == pos.y)||(p.y+1 == pos.y)) &&((p.x == pos.x)||(p.x+1 == pos.x)||(p.x-1 == pos.x)));
-			if (esVecino && estaLibre(s, p)){
-				ps.push_back(p);
+	//Posicion p;
+	for (int i = s.campo().dimensiones().largo; i >= 0; --i){
+		for (int j = 0; j < s.campo().dimensiones().ancho; ++j){
+			bool esVecino = (distancia({j,i}, pos) == 1);
+			if (esVecino && estaLibre(s, {j,i})){
+				ps.push_back({j,i});
 			}
 		}
 	}
@@ -183,9 +190,10 @@ Secuencia<Posicion> posiblePosicionLibre(const Sistema &s, const Posicion &pos)
 bool estaLibre(const Sistema &s, const Posicion &p) //se fija si una posicion 'p' esta libre de drones.
 {
 	bool libre = true;
-	for (unsigned int i = 0; i < s.enjambreDrones().size(); ++i){
+	if(s.campo().contenido(p) == Casa) return false;
+	for (int i = 0; i < s.enjambreDrones().size(); ++i){
 		Posicion pos = s.enjambreDrones()[i].posicionActual();
-		if ((pos.x == p.x) && (pos.y == p.y)){ //modificar luego de que tengamos el OPERADOR pos == pos1;
+		if (pos == p){
 			libre = false;
 			break;
 		}
@@ -196,24 +204,20 @@ bool estaLibre(const Sistema &s, const Posicion &p) //se fija si una posicion 'p
 Posicion posDelGranero(const Campo &c)
 {
 	Posicion p;
-	for (unsigned int i = c.dimensiones().largo; i >= 0; --i){
-		for (unsigned int j = 0; j < c.dimensiones().ancho; ++j){
-			Posicion pos;
-			pos.y = j;
-			pos.x = i;
-			if (c.contenido(pos) == Granero){
-				p = pos;
-				break;
+	for (int i = c.dimensiones().largo; i >= 0; --i){
+		for (int j = 0; j < c.dimensiones().ancho; ++j){
+			if (c.contenido({j,i}) == Granero){
+				p = {j,i};
+				return p;
 			}
 		}
 	}
-	return p;
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
-bool Sistema::listoParaCosechar() const //de este ejercicio me encargo yo asi hago el teorema del INVARIANTE y todo eso.
+bool Sistema::listoParaCosechar() const
 {
 	bool res = ((cantCultivosCosechables(*this))/(parcelasCultivo(campo()).size())) >= 0.9;
 	return res;
@@ -247,7 +251,7 @@ int cantCultivosCosechables(const Sistema &s)
 	unsigned int i = 0;
 	while (i < parcelasCultivo(s.campo()).size()){
 		Posicion p = parcelasCultivo(s.campo())[i];
-		if (s.estadoDelCultivo(p) == ListoParaCosechar){ //error expected primary-expression before "=="...
+		if (s.estadoDelCultivo(p) == ListoParaCosechar){
 			res++;
 			}
 		i++;
