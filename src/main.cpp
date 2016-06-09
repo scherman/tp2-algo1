@@ -22,9 +22,9 @@ int main()
     // crearCampo();
     // compararDrones();
     // crearYCargarCampo();``
-    crearYCargarDrone();
+    // crearYCargarDrone();
     // compararDrones();
-    // crearYCargarSistema();
+    crearYCargarSistema();
     return 0;
 }
 
@@ -141,31 +141,38 @@ void crearYCargarDrone() {
 }
 
 void crearYCargarSistema() {
-    Campo campo;
-    Drone drone;
-    drone.moverA({0,1});
-    drone.moverA({1,1});
-    Drone otroDrone(15, {Fertilizante});
-    otroDrone.moverA({5,1});
-    Secuencia<Drone> drones = {drone, otroDrone};
-    Sistema sistema(campo, drones);
-    sistema.mostrar(std::cout);
+    // Campo campo;
+    // Drone drone;
+    // drone.moverA({0,1});
+    // drone.moverA({1,1});
+    // Drone otroDrone(15, {Fertilizante});
+    // otroDrone.moverA({5,1});
+    // Secuencia<Drone> drones = {drone, otroDrone};
+    // Sistema sistema(campo, drones);
+
+    Secuencia<Producto> productos1 = {HerbicidaLargoAlcance, PlaguicidaBajoConsumo, Herbicida};
+    Secuencia<Producto> productos2 = {Fertilizante, PlaguicidaBajoConsumo, Herbicida};
+
+    Posicion posG{5, 15};
+    Drone d1(1, productos1);
+    Drone d2(2, productos2);
+    d1.cambiarPosicionActual(posG);
+    d2.cambiarPosicionActual(posG);
+
+    Sistema sistema(Campo(posG, {10, 20}), {d1,d2});
+    // sistema.mostrar(std::cout);
     std::ofstream file;
     file.open("sistema.txt");
     sistema.guardar(file);
     file.close();
 
+
     Sistema sistema2;
     std::ifstream in("sistema.txt");
     sistema2.cargar(in);
+    // sistema2.mostrar(std::cout);
     in.close();
 
-    file.open("result.txt");
-    sistema.guardar(file);
-    file << std::endl;
-    file << std::endl;
-    file << std::endl;
-    sistema2.guardar(file);
-    file.close();
+    std::cout << "iguales: " << (sistema == sistema2) << std::endl;
 
 }

@@ -542,7 +542,7 @@ void Sistema::mostrar(std::ostream & os) const
 			} else {
 				os << nombreAbreviado(campo().contenido({i,j}));
 				if (cantDrones > 0) {
-					os << "/" << cantDrones << "  ";
+					os << "/" << cantDrones << "   ";
 				}  else {
 					os << "     ";
 				}
@@ -602,6 +602,7 @@ void Sistema::cargar(std::istream & is)
 	campo.cargar(campoSerializadoStream);
 	this->_campo = campo;
 
+	// Parseo drones
 	Secuencia<Drone> drones;
 	auto pos = is.tellg();    // Leer posicion actual
 	while (std::getline(is,contenido,'{') && !is.eof()) {
@@ -615,7 +616,9 @@ void Sistema::cargar(std::istream & is)
 	is.seekg(pos); // Cambiar posicion actual
 	this->_enjambre = drones;
 
+	// Parseo estados de cultivo
 	std::getline(is, contenido, '[');
+	this->_estado = Grilla<EstadoCultivo> (campo.dimensiones());
 	for (int j = campo.dimensiones().largo - 1; j >= 0; j--) {
 		std::getline(is, contenido, '[');
 		std::string fila;
