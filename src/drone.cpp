@@ -105,13 +105,13 @@ Secuencia<InfoVueloCruzado> Drone::vuelosCruzados(const Secuencia<Drone>& ds)
 	Posicion p = {};
 	Secuencia<Posicion> todasLasPos = todasLasPosSinRepetir(ds);
 	int cantDrones = 0;
-	int k = 0;
-	while(k < ds[0].vueloRealizado().size()){
+	int momento = 0;
+	while(momento < ds[0].vueloRealizado().size()){
 		for(int i = 0; i < todasLasPos.size(); i++){
 			//miro todasLasPos de los drones que me pasen y me voy fijando cuantos drones en el momento "k" estuvieron en esa posicion.
 			//Siempre habra al menos uno, si hay mas de uno, es un cruce.
 			for(int j = 0; j < ds.size(); ++j){
-				if(ds[j].vueloRealizado()[k] == todasLasPos[i]){
+				if(ds[j].vueloRealizado()[momento] == todasLasPos[i]){
 					cantDrones++;
 				}
 			}
@@ -124,6 +124,7 @@ Secuencia<InfoVueloCruzado> Drone::vuelosCruzados(const Secuencia<Drone>& ds)
 			}
 			cantDrones = 0;
 		}
+		momento++;
 	}
 	return infoVuelos;
 }
