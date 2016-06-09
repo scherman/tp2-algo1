@@ -312,6 +312,18 @@ void Drone::sacarProducto(const Producto p)
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
+
+bool Drone::operator==(const Drone & otroDrone) const
+{
+	if (id() != otroDrone.id()) return false;
+	if (bateria() != otroDrone.bateria()) return false;
+	if (enVuelo() != otroDrone.enVuelo()) return false;
+  if (vueloRealizado() != otroDrone.vueloRealizado()) return false;
+	if (!mismosProductos(productosDisponibles(), otroDrone.productosDisponibles())) return false;
+	if (!(posicionActual() == otroDrone.posicionActual())) return false;
+	return true;
+}
+
 //AUXILIARES
 int cantidadProducto (const Secuencia<Producto> & productos, const Producto & producto) {
 	int cont = 0;
@@ -329,29 +341,6 @@ bool mismosProductos(const Secuencia<Producto> & productos1, const Secuencia<Pro
 		if (cantidadProducto(productos1, producto) != cantidadProducto(productos2, producto)) return false;
 	}
 	return true;
-}
-
-bool Drone::operator==(const Drone & otroDrone) const
-{
-	if (id() != otroDrone.id()) return false;
-	if (bateria() != otroDrone.bateria()) return false;
-	if (enVuelo() != otroDrone.enVuelo()) return false;
-  if (vueloRealizado() != otroDrone.vueloRealizado()) return false;
-	if (!mismosProductos(productosDisponibles(), otroDrone.productosDisponibles())) return false;
-	if (!(posicionActual() == otroDrone.posicionActual())) return false;
-	return true;
-}
-
-//AUXILIARES
-int cuentaDrones(const Producto p, const Secuencia<Producto> ps)
-{
-		int count = 0;
-		for (int i = 0; i < ps.size();++i){
-				if(ps[i] == p){
-					count++;
-				}
-		}
-		return count;
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
