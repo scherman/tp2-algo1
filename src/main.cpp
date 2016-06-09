@@ -19,12 +19,12 @@ int main()
 {
     // crearSistema();
     // crearDrone();
-    // crearCampo();
+    crearCampo();
     // compararDrones();
     // crearYCargarCampo();
     // crearYCargarDrone();
     // compararDrones();
-    crearYCargarSistema();
+    // crearYCargarSistema();
     return 0;
 }
 
@@ -121,6 +121,8 @@ void crearYCargarCampo() {
     campo2.cargar(in);
     campo2.mostrar(std::cout);
     in.close();
+
+    std::cout << "Iguales: " << (campo == campo2) << std::endl;
 }
 
 void crearYCargarDrone() {
