@@ -79,6 +79,7 @@ bool mismosDrones(const Secuencia<Drone> ps, const Secuencia<Drone> ds);
 bool cuentaDron(const Drone d, const Secuencia<Drone> ds);
 int distancia(const Posicion &p, const Posicion &pos);
 int valAbs(const int &x);
+bool posValida(const Posicion &p, const Campo &c);
 // Definirlo usando mostrar, para poder usar << con este tipo.
 std::ostream &operator<<(std::ostream &os, const Sistema &s);
 

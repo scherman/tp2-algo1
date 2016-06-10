@@ -438,12 +438,17 @@ void Sistema::volarYSensar(const Drone & d)
 			int l = rand() % 2;
 			Carga d = enjambreDrones()[sub].bateria() - 5;
 			_enjambre[sub].setBateria(d);
-			this->_estado.parcelas[pos.x][pos.y] = RecienSembrado;
 			if(l==0){
 				this->_enjambre[sub].sacarProducto(herbicidas[0]);
+				this->_estado.parcelas[pos.x][pos.y] = RecienSembrado;
 			}
 			else{//aca deberia preguntar que pasa si es HerbicidaLargoAlcance, deberia modificar las parcelas adyacentes que tambien tengan maleza....
 				this->_enjambre[sub].sacarProducto(herbicidas[1]);
+				this->_estado.parcelas[pos.x][pos.y] = RecienSembrado;
+				if((estadoDelCultivo({pos.x+1,pos.y}) == ConMaleza) && (posValida({pos.x+1,pos.y}, campo()))) this->_estado.parcelas[pos.x+1][pos.y] = RecienSembrado;
+				if((estadoDelCultivo({pos.x-1,pos.y}) == ConMaleza) && (posValida({pos.x-1,pos.y}, campo()))) this->_estado.parcelas[pos.x-1][pos.y] = RecienSembrado;
+				if((estadoDelCultivo({pos.x,pos.y+1}) == ConMaleza) && (posValida({pos.x,pos.y+1}, campo()))) this->_estado.parcelas[pos.x][pos.y+1] = RecienSembrado;
+				if((estadoDelCultivo({pos.x,pos.y-1}) == ConMaleza) && (posValida({pos.x,pos.y-1}, campo()))) this->_estado.parcelas[pos.x][pos.y-1] = RecienSembrado;
 			}
 		}
 
@@ -456,8 +461,12 @@ void Sistema::volarYSensar(const Drone & d)
 		if(perteneceA(HerbicidaLargoAlcance, enjambreDrones()[sub].productosDisponibles()) && (!perteneceA(Herbicida, enjambreDrones()[sub].productosDisponibles()))){
 			Carga d = enjambreDrones()[sub].bateria() - 5;
 			_enjambre[sub].setBateria(d);
-			this->_estado.parcelas[pos.x][pos.y] = RecienSembrado;
 			this->_enjambre[sub].sacarProducto(herbicidas[1]);
+			this->_estado.parcelas[pos.x][pos.y] = RecienSembrado;
+			if((estadoDelCultivo({pos.x+1,pos.y}) == ConMaleza) && (posValida({pos.x+1,pos.y}, campo()))) this->_estado.parcelas[pos.x+1][pos.y] = RecienSembrado;
+			if((estadoDelCultivo({pos.x-1,pos.y}) == ConMaleza) && (posValida({pos.x-1,pos.y}, campo()))) this->_estado.parcelas[pos.x-1][pos.y] = RecienSembrado;
+			if((estadoDelCultivo({pos.x,pos.y+1}) == ConMaleza) && (posValida({pos.x,pos.y+1}, campo()))) this->_estado.parcelas[pos.x][pos.y+1] = RecienSembrado;
+			if((estadoDelCultivo({pos.x,pos.y-1}) == ConMaleza) && (posValida({pos.x,pos.y-1}, campo()))) this->_estado.parcelas[pos.x][pos.y-1] = RecienSembrado;
 		}
 	}
 
@@ -519,7 +528,14 @@ bool perteneceA(const Producto &p, const Secuencia<Producto> &ds)
 	}
 	return pert;
 }
-
+//AUXILIARES
+bool posValida(const Posicion &p, const Campo &c)
+{
+	if(c.contenido(p) != Cultivo) return false;
+	bool coordXOk = 0<=p.x<=c.dimensiones().ancho;
+	bool coordYOk = 0<=p.y<=c.dimensiones().largo;
+	return (coordYOk && coordXOk);
+}
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 

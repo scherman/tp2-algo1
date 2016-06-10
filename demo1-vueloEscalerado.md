@@ -1,6 +1,6 @@
 # Demostración vueloEscalerado
 
-## Transformacion de estados 
+## Transformacion de estados
 ```cpp
 bool Drone::vueloEscalerado() const
 {
@@ -79,13 +79,13 @@ bool Drone::vueloEscalerado() const
 	// implica (i == 0) ∧ (escalerado == true) ∧ (|vueloRealizado(this)| - 2 >= 0)
 	// implica (i == 0) (escalerado == true) ∧ (|vueloRealizado(this)| - 2 >= i) (reemplazo sintáctico)
 	// implica (escalerado == true) ∧ (0 <= i <= |vueloRealizado(this)| - 2)
-	
+
 	// implica (((∀m←[0..i))(∃x,y←[1,-1])
 	//	((prm(vueloRealizado(this)[m]) - prm(vueloRealizado(this)[m+2])) == x) ∧
 	//	((sgd(vueloRealizado(this)[m]) - sgd(vueloRealizado(this)[m+2])) == y)) == escalerado)
 	// implica (true == escalerado) (porque ∀m←[0..i) → ∀m←[0..0) que es siempre true)
 	// implica (true == true) (reemplazo sintactico)
-	
+
 	// implica I: (0 <= i <= |vueloRealizado(this)| - 2) ∧ (((∀m←[0..i))(∃x,y←[1,-1])
 	//	((prm(vueloRealizado(this)[m]) - prm(vueloRealizado(this)[m+2])) == x) ∧
 	//	((sgd(vuelorealizado(this)[m]) - sgd(vuelorealizado(this)[m+2])) == y)) == escalerado)
@@ -108,7 +108,7 @@ bool Drone::vueloEscalerado() const
 	// implica (i == |vueloRealizado(this)| - 2) ∧ escalerado(vueloRealizado(this))
 ```
 
-- (I ∧ (V < C)) → ¬Bc
+- (I ∧ (V <= C)) → ¬Bc
 ```cpp
 	// vale I: (0 <= i <= |vueloRealizado(this)| - 2) ∧ (((∀m←[0..i))(∃x,y←[1,-1])
 	//	((prm(vueloRealizado(this)[m]) - prm(vueloRealizado(this)[m+2])) == x) ∧
@@ -118,5 +118,3 @@ bool Drone::vueloEscalerado() const
 	// implica ¬(i <= (|vueloRealizado(this)| - 2))
 	// implica ¬Bc: ¬(i < (|vueloRealizado(this)| - 2))
 ```
-
-
