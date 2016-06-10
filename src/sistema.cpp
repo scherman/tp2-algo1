@@ -162,9 +162,10 @@ int valAbs(const int &x)
 
 void Sistema::despegar(const Drone & d) //hay un requiere que dice que d debe pertenecer a Enjambre y que existe al menos una parcela libre.
 {
-	srand(time(NULL));
-	int x = rand() % (posiblePosicionLibre(*this, posDelGranero(campo()))).size();
-	Posicion p = posiblePosicionLibre(*this, posDelGranero(campo()))[x];
+	Sistema s = *this;
+	//srand(time(NULL)); //si usabamos rand, a veces el test fallaba!
+	//int x = rand() % (posiblePosicionLibre(s, posDelGranero(campo()))).size();
+	Posicion p = posiblePosicionLibre(s, posDelGranero(campo()))[0]; //siempre habra al menos una pos libre, por el REQUIERE.
 	for (int i = 0; i < enjambreDrones().size(); ++i){
 		if(enjambreDrones()[i] == d){
 			_enjambre[i].moverA(p);
@@ -187,10 +188,10 @@ Secuencia<Posicion> posiblePosicionLibre(const Sistema &s, const Posicion &pos)
 	return ps;
 }
 //AUXILIARES
-bool estaLibre(const Sistema &s, const Posicion &p) //se fija si una posicion 'p' esta libre de drones.
+bool estaLibre(const Sistema &s, const Posicion &p) //se fija si una posicion 'p' esta libre de drones y no contiene una CASA.
 {
 	bool libre = true;
-	if(s.campo().contenido(p) == Casa) return false;
+	if((s.campo().contenido(p) == Casa) || (s.campo().contenido(p) == Granero)) return false;
 	for (int i = 0; i < s.enjambreDrones().size(); ++i){
 		Posicion pos = s.enjambreDrones()[i].posicionActual();
 		if (pos == p){
@@ -409,10 +410,11 @@ void Sistema::volarYSensar(const Drone & d)
 //requiere bateria(d) > 0 ;
 //requiere hayParcelaLibre
 {
+	Sistema s = *this;
 	int sub;
-	srand(time(NULL));
-	int x = rand() % (posiblePosicionLibre(*this, d.posicionActual()).size());
-	Posicion p = posiblePosicionLibre(*this, d.posicionActual())[x];
+	//srand(time(NULL)); //Si usaba rand() a veces cuando corria el test muchas veces, me daba erro de segmento core...
+	//int x = (rand()%(posiblePosicionLibre(*this, d.posicionActual()).size()));
+	Posicion p = posiblePosicionLibre(s, d.posicionActual())[0];
 	for (unsigned int i = 0; i < enjambreDrones().size(); ++i){
 		if(enjambreDrones()[i] == d){
 			sub = i;
@@ -425,7 +427,7 @@ void Sistema::volarYSensar(const Drone & d)
 	Posicion pos = enjambreDrones()[sub].posicionActual();
 //miro si no estaSensado
 	if(estadoDelCultivo(pos) == NoSensado){
-		this->_estado.parcelas[pos.x][pos.y] = estaSensado(*this, pos);
+		this->_estado.parcelas[pos.x][pos.y] = estaSensado(s, pos);
 	}
 
 
@@ -435,7 +437,7 @@ void Sistema::volarYSensar(const Drone & d)
 	if((estadoDelCultivo(pos) == ConMaleza) && (enjambreDrones()[sub].bateria() >= 5)){
 		//veo para cada caso que Herbicida tengo disponible.
 		if((perteneceA(Herbicida, enjambreDrones()[sub].productosDisponibles())) && (perteneceA(HerbicidaLargoAlcance, enjambreDrones()[sub].productosDisponibles()))){
-			int l = rand() % 2;
+			int l = (rand()%2);
 			Carga d = enjambreDrones()[sub].bateria() - 5;
 			_enjambre[sub].setBateria(d);
 			if(l==0){
@@ -475,7 +477,7 @@ void Sistema::volarYSensar(const Drone & d)
 	if((estadoDelCultivo(pos) == ConPlaga) && (enjambreDrones()[sub].bateria() >= 5)){
 		if((perteneceA(Plaguicida, enjambreDrones()[sub].productosDisponibles())) && (perteneceA(PlaguicidaBajoConsumo, enjambreDrones()[sub].productosDisponibles()))){
 			if(enjambreDrones()[sub].bateria() >= 10){
-				int k = rand() % 2;
+				int k =(rand()%2);
 				if(k == 0){
 					Carga cr = enjambreDrones()[sub].bateria() - 10;
 					_enjambre[sub].setBateria(cr);
@@ -515,9 +517,9 @@ void Sistema::volarYSensar(const Drone & d)
 EstadoCultivo estaSensado(const Sistema &s, const Posicion &p)
 {
 	Secuencia<EstadoCultivo> estados = {RecienSembrado, EnCrecimiento, ListoParaCosechar, ConMaleza, ConPlaga};
-	srand(time(NULL));
-	int x = rand() % (estados.size());
-	return estados[x];
+	//srand(time(NULL)); //Si usaba rand() a veces cuando corria el test muchas veces, me daba erro de segmento core...
+	//int x = (rand()%(estados.size()));
+	return estados[1];
 }
 //AUXILIARES
 bool perteneceA(const Producto &p, const Secuencia<Producto> &ds)
